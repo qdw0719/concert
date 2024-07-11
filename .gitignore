@@ -1,0 +1,69 @@
+# IntelliJ IDEA 관련
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+# ~: 임시 파일
+# ~: temporary files
+*~
+
+# Java 관련
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.log
+*.javadoc
+*.project
+*.classpath
+*.settings/
+target/
+build/
+
+# Windows 관련
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# 환경에 따라 추가될 수 있는 파일들
+.DS_Store
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+*.rej
+
+# 로그 파일
+*.log
+
+# OS 별 파일
+# Windows:
+*.bat
+*.exe
+
+# macOS:
+*.DS_Store
+*.AppleDouble
+.LSOverride
+
+# Linux:
+*~
+
+# Gradle 관련
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
+gradle-app.properties
+**/gradle.properties
+**/gradlew
+**/gradlew.bat
+**/gradle-wrapper.properties
+
+
+# etc
+#*.yml
