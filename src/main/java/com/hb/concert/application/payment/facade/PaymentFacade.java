@@ -9,7 +9,8 @@ import com.hb.concert.application.payment.service.PaymentService;
 import com.hb.concert.application.queue.service.QueueService;
 import com.hb.concert.application.reservation.service.ReservationDetailService;
 import com.hb.concert.application.reservation.service.ReservationService;
-import com.hb.concert.common.exception.BadRequestException;
+import com.hb.concert.common.exception.CustomException;
+import com.hb.concert.common.exception.ExceptionMessage;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.history.History;
 import com.hb.concert.domain.payment.Payment;
@@ -65,7 +66,7 @@ public class PaymentFacade {
                 concertSeatService.saveConcertSeat(seatCommand);
             }
 
-            throw new BadRequestException("결제 요청시간이 초과되었습니다. 처음부터 다시 시도해 주세요.");
+            throw new CustomException.BadRequestException(ExceptionMessage.REQUEST_TIMEOUT.replace("{msg}", "결제 요청시간")); //"결제 요청시간이 초과되었습니다. 처음부터 다시 시도해 주세요."
         }
 
         Payment payment = paymentService.createPayment(command);

@@ -1,7 +1,8 @@
 package com.hb.concert.application.payment.service;
 
 import com.hb.concert.application.payment.command.PaymentCommand;
-import com.hb.concert.common.exception.NotFoundException;
+import com.hb.concert.common.exception.CustomException;
+import com.hb.concert.common.exception.ExceptionMessage;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.payment.Payment;
 import com.hb.concert.domain.payment.PaymentRepository;
@@ -62,7 +63,7 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         if (reservationRepository.countByReservationId(command.reservationId()) == 0) {
-            new NotFoundException("해당하는 예약건을 찾을 수 없습니다.");
+            new CustomException.NotFoundException(ExceptionMessage.NOT_FOUND.replace("{msg}", "해당하는 예약 건"));
         }
 
         Reservation reservation = reservationRepository.findByReservationId(command.reservationId());

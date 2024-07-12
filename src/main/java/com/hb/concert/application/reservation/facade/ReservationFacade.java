@@ -101,18 +101,20 @@ public class ReservationFacade {
 
             reservation.setValidState(ValidState.INVALID);
             reservationRepository.save(reservation);
-        }
 
-        List<QueueToken> waitingTokens = queueTokenRepository.findByStatusOrderByPositionAsc(QueueToken.TokenStatus.WAIT);
-        for (QueueToken waitingToken : waitingTokens) {
-            int newPosition = waitingToken.getPosition() - 1;
-            waitingToken.setPosition(newPosition);
-            waitingToken.setWaitTime(newPosition * 5);
 
-            if (newPosition == 0) {
-                waitingToken.setStatus(QueueToken.TokenStatus.PROCESS);
-            }
-            queueTokenRepository.save(waitingToken);
+
+//            List<QueueToken> waitingTokens = queueTokenRepository.findByStatusOrderByPositionAsc(QueueToken.TokenStatus.WAIT);
+//            for (QueueToken waitingToken : waitingTokens) {
+//                int newPosition = waitingToken.getPosition() - 1;
+//                waitingToken.setPosition(newPosition);
+//                waitingToken.setWaitTime(newPosition * 5);
+//
+//                if (newPosition == 0) {
+//                    waitingToken.setStatus(QueueToken.TokenStatus.PROCESS);
+//                }
+//                queueTokenRepository.save(waitingToken);
+//            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.hb.concert.config.interceptor;
 
+import com.hb.concert.common.exception.ExceptionMessage;
 import com.hb.concert.config.util.JwtUtil;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.queue.QueueToken;
@@ -44,17 +45,17 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
                 userId = jwtUtil.getUserIdFromToken(tokenStr);
                 jwtUtil.validateToken(tokenStr);
             } catch (JwtException je) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.UNAUTHORIZED);
                 return false;
             }
 
             QueueToken queueToken = queueTokenRepository.findByToken(tokenStr);
             if (queueToken.getIsActive().equals(UseYn.N)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.UNAUTHORIZED);
                 return false;
             }
             if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 토큰입니다. 처음부터 다시 진행해주세요.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.TOKEN_EXPIRED);
                 return false;
             }
             // ConcertRequest에 userId 설정

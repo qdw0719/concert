@@ -2,7 +2,8 @@ package com.hb.concert.presentation.queue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hb.concert.application.queue.command.QueueCommand;
-import com.hb.concert.common.exception.NotFoundException;
+import com.hb.concert.common.exception.CustomException;
+import com.hb.concert.common.exception.ExceptionMessage;
 import com.hb.concert.config.util.JwtUtil;
 import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.UserRepository;
@@ -44,7 +45,7 @@ class QueueControllerTest {
     @BeforeEach
     void setUp() {
         Optional<User> userOptional = userRepository.findById(1L);
-        User user = userOptional.orElseThrow(() -> new NotFoundException("User not found")); // Handling user not found
+        User user = userOptional.orElseThrow(() -> new CustomException.NotFoundException(ExceptionMessage.NOT_FOUND.replace("{msg}", "유저"))); // Handling user not found
         userId = user.getUserId();
 
         token = jwtUtil.generateToken(userId, 0, 0);
