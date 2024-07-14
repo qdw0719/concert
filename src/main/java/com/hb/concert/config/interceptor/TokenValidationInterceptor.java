@@ -9,6 +9,7 @@ import com.hb.concert.presentation.concert.ConcertRequest;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -17,13 +18,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.UUID;
 
-@Component
+@Component @Slf4j
 public class TokenValidationInterceptor implements HandlerInterceptor {
 
-    @Autowired private HttpServletRequest httpServletRequest;
-
     @Autowired private QueueTokenRepository queueTokenRepository;
-
     @Autowired private JwtUtil jwtUtil;
 
     @Override
@@ -46,20 +44,23 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
                 jwtUtil.validateToken(tokenStr);
             } catch (JwtException je) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.UNAUTHORIZED);
+                log.info("Token validation check, JwtException >> {}", je.getMessage());
                 return false;
             }
 
             QueueToken queueToken = queueTokenRepository.findByToken(tokenStr);
             if (queueToken.getIsActive().equals(UseYn.N)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.UNAUTHORIZED);
+                log.info("Token IsActive check, isActive : {}", queueToken.getIsActive());
                 return false;
             }
             if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.TOKEN_EXPIRED);
+                log.info("Token status check, status : {}", queueToken.getStatus());
                 return false;
             }
             // ConcertRequest에 userId 설정
-            Object[] args = ((HandlerMethod) handler).getMethodParameters();
+            Object[] args = handlerMethod.getMethodParameters();
             for (Object arg : args) {
                 if (arg instanceof ConcertRequest) {
                     ConcertRequest originRequest = (ConcertRequest) arg;

@@ -1,4 +1,4 @@
-package com.hb.concert.application.payment.service;
+package com.hb.concert.domain.payment.service;
 
 import com.hb.concert.application.payment.command.PaymentCommand;
 import com.hb.concert.common.exception.CustomException;

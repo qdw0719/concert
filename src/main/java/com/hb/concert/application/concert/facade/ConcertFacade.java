@@ -1,10 +1,8 @@
 package com.hb.concert.application.concert.facade;
 
 import com.hb.concert.application.concert.command.ConcertCommand;
-import com.hb.concert.application.concert.service.ConcertDetailService;
-import com.hb.concert.application.concert.service.ConcertSeatService;
-import com.hb.concert.application.concert.service.ConcertService;
-import com.hb.concert.application.queue.service.QueueService;
+import com.hb.concert.domain.concert.service.ConcertService;
+import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.concert.Concert;
 import com.hb.concert.domain.concert.ConcertDetail;
 import com.hb.concert.domain.concert.ConcertSeat;
@@ -19,15 +17,11 @@ import java.util.List;
 @Service
 public class ConcertFacade {
     private final ConcertService concertService;
-    private final ConcertDetailService concertDetailService;
-    private final ConcertSeatService concertSeatService;
     private final QueueTokenRepository queueTokenRepository;
     private final QueueService queueService;
 
-    public ConcertFacade(ConcertService concertService, ConcertDetailService concertDetailService, ConcertSeatService concertSeatService, QueueTokenRepository queueTokenRepository, QueueService queueService) {
+    public ConcertFacade(ConcertService concertService, QueueTokenRepository queueTokenRepository, QueueService queueService) {
         this.concertService = concertService;
-        this.concertDetailService = concertDetailService;
-        this.concertSeatService = concertSeatService;
         this.queueTokenRepository = queueTokenRepository;
         this.queueService = queueService;
     }
@@ -38,7 +32,7 @@ public class ConcertFacade {
      * @return 예약 가능한 콘서트 목록
      */
     public List<Concert> getAvailableConcerts() {
-        return concertDetailService.findAvailableConcertIdList(LocalDate.now());
+        return concertService.findAvailableConcertIdList(LocalDate.now());
     }
 
     /**
@@ -65,7 +59,7 @@ public class ConcertFacade {
         token.setStatus(TokenStatus.PROCESS);
         queueTokenRepository.save(token);
 
-        return concertDetailService.findAvailableDetails(command.concertId(), command.currentDate());
+        return concertService.findAvailableDetails(command.concertId(), command.currentDate());
     }
 
     /**
@@ -75,6 +69,6 @@ public class ConcertFacade {
      * @return 예약 가능한 콘서트 좌석 정보 목록
      */
     public List<ConcertSeat> getConcertSeat(ConcertCommand.getConcertSeat command) {
-        return concertSeatService.findConcertSeats(command);
+        return concertService.findConcertSeats(command);
     }
 }

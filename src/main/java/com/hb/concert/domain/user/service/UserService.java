@@ -1,4 +1,4 @@
-package com.hb.concert.application.user.service;
+package com.hb.concert.domain.user.service;
 
 import com.hb.concert.application.user.command.UserCommand;
 import com.hb.concert.common.exception.CustomException;

@@ -1,4 +1,4 @@
-package com.hb.concert.application.history.service;
+package com.hb.concert.domain.history.service;
 
 import com.hb.concert.application.history.command.HistoryCreateCommand;
 import com.hb.concert.domain.history.History;

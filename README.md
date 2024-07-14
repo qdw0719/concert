@@ -52,12 +52,6 @@
 
 ### 3-1. Swagger
 
-![api_users_charge](https://github.com/qdw0719/concert/assets/84309890/13373771-2056-4004-891c-6c931c2e257c)
-![api_reservations](https://github.com/qdw0719/concert/assets/84309890/5a0d1a5f-f855-4429-b274-272fff221063)
-![api_payments_create](https://github.com/qdw0719/concert/assets/84309890/1dc56265-83a8-4b80-abbf-d290a3d4ac60)
-![api_concerts](https://github.com/qdw0719/concert/assets/84309890/6687a533-ff21-4b0a-ad09-386adbe127ae)
-![api_concerts_{concertId}_details](https://github.com/qdw0719/concert/assets/84309890/cd4fa99c-18a7-4511-b494-9188149521cb)
-![api_concerts_{concertId}_details_{detailId}_seats](https://github.com/qdw0719/concert/assets/84309890/a1f97bfc-3c3a-4b88-9693-94b44f2d5e40)
 
 ---
 

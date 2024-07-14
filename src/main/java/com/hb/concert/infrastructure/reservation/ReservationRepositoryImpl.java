@@ -49,7 +49,17 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Reservation findTopByOrderByUserIdDesc(UUID userId) {
+    public Reservation findTopByUserIdOrderByUserIdDesc(UUID userId) {
         return reservationJpaRepository.findTopByOrderByUserIdDesc(userId);
+    }
+
+    @Override
+    public Reservation findTopByUserIdAndReservationTimeBetweenOrderByUserIdDesc(UUID userId, LocalDateTime min, LocalDateTime max) {
+        return reservationJpaRepository.findTopByUserIdAndReservationTimeBetweenOrderByUserIdDesc(userId, min, max);
+    }
+
+    @Override
+    public List<Reservation> findAllByIsPaid(UseYn useYn) {
+        return reservationJpaRepository.findAllByIsPaid(useYn);
     }
 }

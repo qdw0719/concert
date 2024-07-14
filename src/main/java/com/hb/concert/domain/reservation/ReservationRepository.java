@@ -19,5 +19,9 @@ public interface ReservationRepository {
 
     List<Reservation> findByIsPaidAndTemporaryGrantTimeBefore(UseYn useYn, LocalDateTime now);
 
-    Reservation findTopByOrderByUserIdDesc(UUID userId);
+    Reservation findTopByUserIdOrderByUserIdDesc(UUID userId);
+
+    Reservation findTopByUserIdAndReservationTimeBetweenOrderByUserIdDesc(UUID userId, LocalDateTime min, LocalDateTime max);
+
+    List<Reservation> findAllByIsPaid(UseYn useYn);
 }

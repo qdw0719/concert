@@ -23,4 +23,8 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, Lon
     Reservation findTopByOrderByUserIdDesc(@Param("userId") UUID userId);
 
     List<Reservation> findByIsPaidAndTemporaryGrantTimeBefore(UseYn useYn, LocalDateTime now);
+
+    List<Reservation> findAllByIsPaid(UseYn useYn);
+
+    Reservation findTopByUserIdAndReservationTimeBetweenOrderByUserIdDesc(UUID userId, LocalDateTime min, LocalDateTime max);
 }

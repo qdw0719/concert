@@ -15,11 +15,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenValidationInterceptor)
-                .addPathPatterns("/api/reservations")
-                .addPathPatterns("/api/payments/create")
-                .addPathPatterns("/api/concerts/**/details")
-                .addPathPatterns("/api/concerts/**/details/**/seat");
-
+                .addPathPatterns(
+                        "/api/reservations",
+                        "/api/payments/create",
+                        "/api/concerts/**/details",
+                        "/api/concerts/**/details/**/seat"
+                );
     }
-
 }

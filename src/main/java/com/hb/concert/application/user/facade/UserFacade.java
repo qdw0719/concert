@@ -1,7 +1,7 @@
 package com.hb.concert.application.user.facade;
 
 import com.hb.concert.application.user.command.UserCommand;
-import com.hb.concert.application.user.service.UserService;
+import com.hb.concert.domain.user.service.UserService;
 import org.springframework.stereotype.Service;
 
 @Service

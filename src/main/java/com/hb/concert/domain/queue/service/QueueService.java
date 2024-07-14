@@ -1,4 +1,4 @@
-package com.hb.concert.application.queue.service;
+package com.hb.concert.domain.queue.service;
 
 import com.hb.concert.application.queue.command.QueueCommand;
 import com.hb.concert.config.util.JwtUtil;
@@ -6,6 +6,7 @@ import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueToken.TokenStatus;
 import com.hb.concert.domain.queue.QueueTokenRepository;
+import com.hb.concert.domain.reservation.Reservation;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -99,17 +100,7 @@ public class QueueService {
             queueTokenRepository.save(token);
             tokenList.remove(token);
 
-            List<QueueToken> waitingTokens = queueTokenRepository.findByStatusOrderByPositionAsc(TokenStatus.WAIT);
-            for (QueueToken waitingToken : waitingTokens) {
-                int newPosition = waitingToken.getPosition() - 1;
-                waitingToken.setPosition(newPosition);
-                waitingToken.setWaitTime(calculateWaitTime(newPosition));
-
-                if (newPosition == 0) {
-                    waitingToken.setStatus(TokenStatus.PROCESS);
-                }
-                queueTokenRepository.save(waitingToken);
-            }
+            positionDecreaseWaitingToken();
         }
     }
 
@@ -167,12 +158,37 @@ public class QueueService {
      *
      * @param userId 사용자의 UUID
      */
-    public void queueExpired(UUID userId) {
+    public void expiredQueue(UUID userId) {
         QueueToken queueToken = getUserToken(userId);
         if (queueToken != null) {
             queueToken.setStatus(TokenStatus.EXPIRED);
             queueToken.setIsActive(UseYn.N);
             queueTokenRepository.save(queueToken);
         }
+    }
+
+    /**
+     * 대기열 토큰의 대기순번, 대기시간 -1
+     */
+    public void positionDecreaseWaitingToken() {
+        List<QueueToken> waitingTokens = queueTokenRepository.findByStatusOrderByPositionAsc(QueueToken.TokenStatus.WAIT);
+        for (QueueToken waitingToken : waitingTokens) {
+            int newPosition = waitingToken.getPosition() - 1;
+            waitingToken.setPosition(newPosition);
+            waitingToken.setWaitTime(newPosition * 5);
+
+            if (newPosition == 0) {
+                waitingToken.setStatus(QueueToken.TokenStatus.PROCESS);
+            }
+            queueTokenRepository.save(waitingToken);
+        }
+    }
+
+    /**
+     * 예약진행중인 토큰들 전부 조회
+     * @return
+     */
+    public List<QueueToken> getAllProcessTokens() {
+        return queueTokenRepository.findByStatus(TokenStatus.PROCESS);
     }
 }

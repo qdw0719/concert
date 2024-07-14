@@ -1,6 +1,5 @@
 package com.hb.concert.presentation.reservation;
 
-import com.hb.concert.annotation.TokenValidation;
 import com.hb.concert.application.reservation.facade.ReservationFacade;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

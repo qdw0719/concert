@@ -1,14 +1,13 @@
 package com.hb.concert.application.payment.facade;
 
 import com.hb.concert.application.concert.command.ConcertCommand;
-import com.hb.concert.application.concert.service.ConcertSeatService;
 import com.hb.concert.application.history.command.HistoryCreateCommand;
-import com.hb.concert.application.history.service.HistoryService;
+import com.hb.concert.domain.concert.service.ConcertService;
+import com.hb.concert.domain.history.service.HistoryService;
 import com.hb.concert.application.payment.command.PaymentCommand;
-import com.hb.concert.application.payment.service.PaymentService;
-import com.hb.concert.application.queue.service.QueueService;
-import com.hb.concert.application.reservation.service.ReservationDetailService;
-import com.hb.concert.application.reservation.service.ReservationService;
+import com.hb.concert.domain.payment.service.PaymentService;
+import com.hb.concert.domain.queue.service.QueueService;
+import com.hb.concert.domain.reservation.service.ReservationService;
 import com.hb.concert.common.exception.CustomException;
 import com.hb.concert.common.exception.ExceptionMessage;
 import com.hb.concert.domain.common.enumerate.UseYn;
@@ -28,16 +27,14 @@ public class PaymentFacade {
     private final ReservationService reservationService;
     private final QueueService queueService;
     private final HistoryService historyService;
-    private final ReservationDetailService reservationDetailService;
-    private final ConcertSeatService concertSeatService;
+    private final ConcertService concertService;
 
-    public PaymentFacade(PaymentService paymentService, ReservationService reservationService, QueueService queueService, HistoryService historyService, ReservationDetailService reservationDetailService, ConcertSeatService concertSeatService) {
+    public PaymentFacade(PaymentService paymentService, ReservationService reservationService, QueueService queueService, HistoryService historyService, ConcertService concertService) {
         this.paymentService = paymentService;
         this.reservationService = reservationService;
         this.queueService = queueService;
         this.historyService = historyService;
-        this.reservationDetailService = reservationDetailService;
-        this.concertSeatService = concertSeatService;
+        this.concertService = concertService;
     }
 
     /**
@@ -51,19 +48,19 @@ public class PaymentFacade {
         Reservation reservationInfo = reservationService.getReservationInfoByUser(command.userId());
 
         if (reservationInfo.getReservationTime().isBefore(reservationInfo.getTemporaryGrantTime())) {
-            queueService.queueExpired(reservationInfo.getUserId());
+            queueService.expiredQueue(reservationInfo.getUserId());
 
             HistoryCreateCommand.HistoryCreate historyCommand = new HistoryCreateCommand.HistoryCreate(
                     command.userId(), History.HistoryType.PAYMENT, LocalDateTime.now(), History.HistoryStatus.FAIL, "결제 요청시간 초과"
             );
             historyService.saveHistory(historyCommand);
 
-            List<Integer> reservedSeatIdList = reservationDetailService.getConcertSeatIdByReservationId(reservationInfo.getReservationId());
+            List<Integer> reservedSeatIdList = reservationService.getConcertSeatIdByReservationId(reservationInfo.getReservationId());
             for (Integer seatId : reservedSeatIdList) {
                 ConcertCommand.saveConcertSeat seatCommand = new ConcertCommand.saveConcertSeat(
                         seatId, reservationInfo.getConcertId(), reservationInfo.getConcertDetailId(), UseYn.Y
                 );
-                concertSeatService.saveConcertSeat(seatCommand);
+                concertService.saveConcertSeat(seatCommand);
             }
 
             throw new CustomException.BadRequestException(ExceptionMessage.REQUEST_TIMEOUT.replace("{msg}", "결제 요청시간")); //"결제 요청시간이 초과되었습니다. 처음부터 다시 시도해 주세요."

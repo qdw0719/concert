@@ -1,6 +1,6 @@
 package com.hb.concert.presentation.concert;
 
-import com.hb.concert.annotation.TokenValidation;
+//import com.hb.concert.annotation.TokenValidation;
 import com.hb.concert.application.concert.facade.ConcertFacade;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import org.springframework.http.ResponseEntity;
