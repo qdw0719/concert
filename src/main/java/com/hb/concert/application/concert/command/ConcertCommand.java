@@ -24,4 +24,9 @@ public class ConcertCommand {
             String concertDetailId,
             UseYn useYn
     ) {}
+
+    public record validation(
+            String concertId,
+            String detailId
+    ) {}
 }

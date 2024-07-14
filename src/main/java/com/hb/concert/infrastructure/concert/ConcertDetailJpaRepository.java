@@ -10,6 +10,10 @@ import java.util.List;
 
 public interface ConcertDetailJpaRepository extends JpaRepository<ConcertDetail, Long> {
     List<ConcertDetail> findByConcertIdAndConcertDateAfterAndValidState(String concertId, LocalDate currentDate, ValidState validState);
+
     List<Concert> findDistinctConcertIdByConcertDateAfter(LocalDate currentDate);
+
     ConcertDetail findByConcertId(String concertId);
+
+    int countByConcertIdAndDetailId(String concertId, String detailId);
 }

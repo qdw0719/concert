@@ -9,4 +9,6 @@ public interface ConcertRepository {
     List<Concert> saveAll(List<Concert> concertList);
 
     int count();
+
+    int countByConcertId(String concertId);
 }

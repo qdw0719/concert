@@ -17,4 +17,6 @@ public interface ConcertDetailRepository {
     int count();
 
     ConcertDetail findByConcertId(String concertId);
+
+    int countByConcertIdAndDetailId(String concertId, String detailId);
 }

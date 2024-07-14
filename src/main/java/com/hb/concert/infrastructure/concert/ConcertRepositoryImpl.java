@@ -31,6 +31,11 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     @Override
+    public int countByConcertId(String concertId) {
+        return concertJpaRepository.countByConcertId(concertId);
+    }
+
+    @Override
     public List<Concert> findAll() {
         return concertJpaRepository.findAll();
     }

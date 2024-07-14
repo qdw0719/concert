@@ -18,6 +18,8 @@ public class CustomException extends ResponseStatusException {
         public static final String USER_NOT_FOUND = "유저를 찾을 수 없습니다.";
 
         public static final String RESERVATION_NOT_FOUND = "해당 예약을 찾을 수 없습니다.";
+
+        public static final String CONCERT_NOT_FOUND = "해당 콘서트 정보를 찾을 수 없습니다.";
     }
 
     public static class BadRequestException extends CustomException {

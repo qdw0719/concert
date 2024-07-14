@@ -36,4 +36,8 @@ public class CommonUtil {
     public static boolean isListNull(List list) {
         return list == null || list.size() == 0 || list.isEmpty();
     }
+
+    public static String isNullToString(Object o) {
+        return o == null ? "" : o.toString();
+    }
 }

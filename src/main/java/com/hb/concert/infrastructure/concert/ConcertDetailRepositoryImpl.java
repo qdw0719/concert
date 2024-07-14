@@ -47,4 +47,9 @@ public class ConcertDetailRepositoryImpl implements ConcertDetailRepository {
     public ConcertDetail findByConcertId(String concertId) {
         return concertDetailJpaRepository.findByConcertId(concertId);
     }
+
+    @Override
+    public int countByConcertIdAndDetailId(String concertId, String detailId) {
+        return concertDetailJpaRepository.countByConcertIdAndDetailId(concertId, detailId);
+    }
 }
