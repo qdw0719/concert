@@ -2,6 +2,7 @@ package com.hb.concert.domain.payment.service;
 
 import com.hb.concert.application.payment.command.PaymentCommand;
 import com.hb.concert.common.exception.CustomException;
+import com.hb.concert.common.exception.CustomException.BadRequestException;
 import com.hb.concert.common.exception.CustomException.NotFoundException;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.payment.Payment;
@@ -46,10 +47,10 @@ public class PaymentService {
     public Payment createPayment(PaymentCommand.CreatePayment command) {
         log.info("Request paymeny user : {}", command.userId());
         User user = userRepository.findByUserId(command.userId())
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException.NotFoundException(NotFoundException.USER_NOT_FOUND));
 
         if (user.getBalance() < command.totalPrice()) {
-            throw new IllegalArgumentException("잔액이 부족합니다. 충전 후 이용해주세요.");
+            throw new CustomException.BadRequestException(BadRequestException.PAYMENT_NOTENOUPH_AMOUNT);
         }
 
         user.setBalance(user.getBalance() - command.totalPrice());

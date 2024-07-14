@@ -29,6 +29,7 @@ public class CustomException extends ResponseStatusException {
 
         public static final String PAYMENT_REQUEST_TIMEOUT = "결제 요청시간이 초과하였습니다. 처음부터 다시 진행해 주세요.";
 
+        public static final String PAYMENT_NOTENOUPH_AMOUNT = "금액이 부족합니다. 충전 후 이용해 주세요.";
     }
 
     public static class QueueException extends CustomException {
@@ -36,6 +37,8 @@ public class CustomException extends ResponseStatusException {
             super(HttpStatus.BAD_REQUEST, message);
         }
 
-        public static final String TOKEN_NOT_IN_QUEUE = "대기열 순번이 0이 야닙니다.";
+        public static final String TOKEN_NOT_IN_QUEUE = "대기열에 대기중인 토큰이 아닙니다.";
+
+        public static final String TOKEN_NOT_POSITION_ZERO = "대기열 순번이 0이 야닙니다.";
     }
 }

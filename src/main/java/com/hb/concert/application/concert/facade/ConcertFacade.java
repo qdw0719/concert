@@ -2,6 +2,7 @@ package com.hb.concert.application.concert.facade;
 
 import com.hb.concert.application.concert.command.ConcertCommand;
 import com.hb.concert.common.exception.CustomException;
+import com.hb.concert.common.exception.CustomException.QueueException;
 import com.hb.concert.domain.concert.service.ConcertService;
 import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.concert.Concert;
@@ -45,7 +46,7 @@ public class ConcertFacade {
     public List<ConcertDetail> getAvailableDetails(ConcertCommand.GetAvailableDetails command) {
         QueueToken token = queueTokenRepository.findByToken(command.token());
         if (token.getStatus() != TokenStatus.WAIT) {
-            throw new IllegalArgumentException("대기열에 대기중인 토큰이 아닙니다.");
+            throw new CustomException.QueueException(QueueException.TOKEN_NOT_IN_QUEUE);
         }
 
         // 대기열 순번이 0인지 체크
@@ -53,7 +54,7 @@ public class ConcertFacade {
             QueueToken queueToken = queueService.getUserToken(command.userId());
             int position = queueToken.getPosition();
             int waitTime = queueToken.getWaitTime();
-            throw new CustomException.QueueException(CustomException.QueueException.TOKEN_NOT_IN_QUEUE +  String.format(" 현재 대기순번: %d, 남은 대기시간: %d " + position, waitTime));
+            throw new CustomException.QueueException(CustomException.QueueException.TOKEN_NOT_POSITION_ZERO +  String.format(" 현재 대기순번: %d, 남은 대기시간: %d " + position, waitTime));
         }
 
         // 토큰 상태를 PROCESS로 변경
