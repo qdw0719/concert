@@ -48,7 +48,7 @@ public class ConcertService {
      * @param currentDate 현재 날짜
      * @return 예약 가능한 콘서트 ID 목록
      */
-    public List<Concert> findAvailableConcertIdList(LocalDate currentDate) {
+    public List<Concert> getAvailableConcerts(LocalDate currentDate) {
         return concertDetailRepository.findDistinctConcertIdByConcertDateAfter(currentDate);
     }
 

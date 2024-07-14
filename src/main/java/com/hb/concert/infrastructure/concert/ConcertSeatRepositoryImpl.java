@@ -1,6 +1,5 @@
 package com.hb.concert.infrastructure.concert;
 
-import com.hb.concert.application.concert.command.ConcertCommand;
 import com.hb.concert.domain.concert.ConcertSeat;
 import com.hb.concert.domain.concert.ConcertSeatRepository;
 import org.springframework.stereotype.Repository;

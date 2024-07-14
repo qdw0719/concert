@@ -1,6 +1,6 @@
 package com.hb.concert.config.interceptor;
 
-import com.hb.concert.common.exception.ExceptionMessage;
+import com.hb.concert.common.exception.CustomException;
 import com.hb.concert.config.util.JwtUtil;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.queue.QueueToken;
@@ -44,19 +44,19 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
                 log.info("Request user ID : {}", userId);
                 jwtUtil.validateToken(tokenStr);
             } catch (JwtException je) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.UNAUTHORIZED);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
                 log.info("Token validation check, JwtException >> {}", je.getMessage());
                 return false;
             }
 
             QueueToken queueToken = queueTokenRepository.findByToken(tokenStr);
             if (queueToken.getIsActive().equals(UseYn.N)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.UNAUTHORIZED);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
                 log.info("Token IsActive check, isActive : {}", queueToken.getIsActive());
                 return false;
             }
             if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.TOKEN_EXPIRED);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
                 log.info("Token status check, status : {}", queueToken.getStatus());
                 return false;
             }

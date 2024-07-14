@@ -1,7 +1,7 @@
 package com.hb.concert.aspect;
 
 import com.hb.concert.common.exception.CustomException;
-import com.hb.concert.common.exception.ExceptionMessage;
+import com.hb.concert.common.exception.CustomException.BadRequestException;
 import com.hb.concert.config.util.JwtUtil;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueTokenRepository;
@@ -38,16 +38,16 @@ public class TokenValidationAspect {
         try {
             userId = jwtUtil.getUserIdFromToken(tokenStr);
             jwtUtil.validateToken(tokenStr);
-        } catch (JwtException e) {
-            throw new JwtException("유효하지 않은 토큰입니다.");
+        } catch (CustomException.BadRequestException be) {
+            throw new CustomException.BadRequestException(BadRequestException.TOKEN_UNAUTHORIZED);
         }
 
         QueueToken queueToken = queueTokenRepository.findByToken(tokenStr);
         if (queueToken.getIsActive().equals("N")) {
-            throw new CustomException.BadRequestException(ExceptionMessage.UNAUTHORIZED);
+            throw new CustomException.BadRequestException(BadRequestException.TOKEN_UNAUTHORIZED);
         }
         if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
-            throw new CustomException.BadRequestException(ExceptionMessage.UNAUTHORIZED);
+            throw new CustomException.BadRequestException(BadRequestException.TOKEN_UNAUTHORIZED);
         }
 
         // ConcertRequest에 userId 설정

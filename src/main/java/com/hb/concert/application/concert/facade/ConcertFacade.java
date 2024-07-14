@@ -1,6 +1,7 @@
 package com.hb.concert.application.concert.facade;
 
 import com.hb.concert.application.concert.command.ConcertCommand;
+import com.hb.concert.common.exception.CustomException;
 import com.hb.concert.domain.concert.service.ConcertService;
 import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.concert.Concert;
@@ -32,7 +33,7 @@ public class ConcertFacade {
      * @return 예약 가능한 콘서트 목록
      */
     public List<Concert> getAvailableConcerts() {
-        return concertService.findAvailableConcertIdList(LocalDate.now());
+        return concertService.getAvailableConcerts(LocalDate.now());
     }
 
     /**
@@ -52,7 +53,7 @@ public class ConcertFacade {
             QueueToken queueToken = queueService.getUserToken(command.userId());
             int position = queueToken.getPosition();
             int waitTime = queueToken.getWaitTime();
-            throw new IllegalArgumentException(String.format("대기열 순번이 0이 아닙니다. 현재 대기순번: %d, 남은 대기시간: %d " + position, waitTime));
+            throw new CustomException.QueueException(CustomException.QueueException.TOKEN_NOT_IN_QUEUE +  String.format(" 현재 대기순번: %d, 남은 대기시간: %d " + position, waitTime));
         }
 
         // 토큰 상태를 PROCESS로 변경

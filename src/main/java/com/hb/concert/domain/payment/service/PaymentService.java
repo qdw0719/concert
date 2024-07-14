@@ -2,7 +2,7 @@ package com.hb.concert.domain.payment.service;
 
 import com.hb.concert.application.payment.command.PaymentCommand;
 import com.hb.concert.common.exception.CustomException;
-import com.hb.concert.common.exception.ExceptionMessage;
+import com.hb.concert.common.exception.CustomException.NotFoundException;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.payment.Payment;
 import com.hb.concert.domain.payment.PaymentRepository;
@@ -13,13 +13,14 @@ import com.hb.concert.domain.reservation.Reservation;
 import com.hb.concert.domain.reservation.ReservationRepository;
 import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Service
+@Service @Slf4j
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -43,6 +44,7 @@ public class PaymentService {
      */
     @Transactional
     public Payment createPayment(PaymentCommand.CreatePayment command) {
+        log.info("Request paymeny user : {}", command.userId());
         User user = userRepository.findByUserId(command.userId())
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
@@ -63,7 +65,7 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         if (reservationRepository.countByReservationId(command.reservationId()) == 0) {
-            new CustomException.NotFoundException(ExceptionMessage.NOT_FOUND.replace("{msg}", "해당하는 예약 건"));
+            new CustomException.NotFoundException(NotFoundException.RESERVATION_NOT_FOUND);
         }
 
         Reservation reservation = reservationRepository.findByReservationId(command.reservationId());
