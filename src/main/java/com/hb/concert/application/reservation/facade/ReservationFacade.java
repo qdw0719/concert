@@ -25,17 +25,14 @@ import java.util.List;
 public class ReservationFacade {
 
     private final ReservationService reservationService;
-    private final ReservationDetailService reservationDetailService;
     private final ConcertService concertService;
     private final HistoryService historyService;
     private final QueueService queueService;
-
     private final ReservationRepository reservationRepository;
     private final QueueTokenRepository queueTokenRepository;
 
-    public ReservationFacade(ReservationService reservationService, ReservationDetailService reservationDetailService, ConcertService concertService, HistoryService historyService, QueueService queueService, ReservationRepository reservationRepository, QueueTokenRepository queueTokenRepository) {
+    public ReservationFacade(ReservationService reservationService, ConcertService concertService, HistoryService historyService, QueueService queueService, ReservationRepository reservationRepository, QueueTokenRepository queueTokenRepository) {
         this.reservationService = reservationService;
-        this.reservationDetailService = reservationDetailService;
         this.concertService = concertService;
         this.historyService = historyService;
         this.queueService = queueService;
