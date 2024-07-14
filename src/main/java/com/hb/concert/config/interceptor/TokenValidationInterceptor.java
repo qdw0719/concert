@@ -41,6 +41,7 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
             UUID userId;
             try {
                 userId = jwtUtil.getUserIdFromToken(tokenStr);
+                log.info("Request user ID : {}", userId);
                 jwtUtil.validateToken(tokenStr);
             } catch (JwtException je) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ExceptionMessage.UNAUTHORIZED);
