@@ -19,14 +19,12 @@ public class QueueFacade {
     private final QueueService queueService;
     private final ReservationService reservationService;
     private final JwtUtil jwtUtil;
-    private final ReservationFacade reservationFacade;
 
     @Autowired
-    public QueueFacade(QueueService queueService, ReservationService reservationService, JwtUtil jwtUtil, ReservationFacade reservationFacade) {
+    public QueueFacade(QueueService queueService, ReservationService reservationService, JwtUtil jwtUtil) {
         this.queueService = queueService;
         this.reservationService = reservationService;
         this.jwtUtil = jwtUtil;
-        this.reservationFacade = reservationFacade;
     }
 
     /**

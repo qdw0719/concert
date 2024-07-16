@@ -16,4 +16,6 @@ public interface QueueTokenRepository {
     List<QueueToken> findAll();
 
     List<QueueToken> findByStatusOrderByPositionAsc(QueueToken.TokenStatus status);
+
+    int countByStatus(QueueToken.TokenStatus status);
 }

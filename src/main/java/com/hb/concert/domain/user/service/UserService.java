@@ -1,7 +1,7 @@
 package com.hb.concert.domain.user.service;
 
 import com.hb.concert.application.user.command.UserCommand;
-import com.hb.concert.common.exception.CustomException.NotFoundException;
+import com.hb.concert.domain.exception.CustomException.NotFoundException;
 
 import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.UserRepository;

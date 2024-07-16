@@ -27,16 +27,15 @@ public class ReservationFacade {
     private final ConcertService concertService;
     private final HistoryService historyService;
     private final QueueService queueService;
-    private final ReservationRepository reservationRepository;
-    private final QueueTokenRepository queueTokenRepository;
 
-    public ReservationFacade(ReservationService reservationService, ConcertService concertService, HistoryService historyService, QueueService queueService, ReservationRepository reservationRepository, QueueTokenRepository queueTokenRepository) {
+    private final ReservationRepository reservationRepository;
+
+    public ReservationFacade(ReservationService reservationService, ConcertService concertService, HistoryService historyService, QueueService queueService, ReservationRepository reservationRepository) {
         this.reservationService = reservationService;
         this.concertService = concertService;
         this.historyService = historyService;
         this.queueService = queueService;
         this.reservationRepository = reservationRepository;
-        this.queueTokenRepository = queueTokenRepository;
     }
 
     /**
@@ -76,7 +75,7 @@ public class ReservationFacade {
      */
     @Transactional
     public void expireReservations() {
-        List<Reservation> expiredReservations = reservationRepository.findByIsPaidAndTemporaryGrantTimeBefore(UseYn.N, LocalDateTime.now());
+        List<Reservation> expiredReservations = reservationService.getExpiredTargetList();
 
         for (Reservation reservation : expiredReservations) {
             queueService.expiredQueue(reservation.getUserId());
@@ -95,7 +94,7 @@ public class ReservationFacade {
             }
 
             reservation.setValidState(ValidState.INVALID);
-            reservationRepository.save(reservation);
+            reservationService.saveReservation(reservation);
         }
     }
 }

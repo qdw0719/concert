@@ -1,7 +1,7 @@
 package com.hb.concert.aspect;
 
-import com.hb.concert.common.exception.CustomException;
-import com.hb.concert.common.exception.CustomException.BadRequestException;
+import com.hb.concert.domain.exception.CustomException;
+import com.hb.concert.domain.exception.CustomException.BadRequestException;
 import com.hb.concert.config.util.JwtUtil;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueTokenRepository;
@@ -51,12 +51,12 @@ public class TokenValidationAspect {
         }
 
         // ConcertRequest에 userId 설정
-        Object[] args = joinPoint.getArgs();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof ConcertRequest) {
-                ConcertRequest originalRequest = (ConcertRequest) args[i];
-                originalRequest.setUserId(userId);
-            }
-        }
+//        Object[] args = joinPoint.getArgs();
+//        for (int i = 0; i < args.length; i++) {
+//            if (args[i] instanceof ConcertRequest) {
+//                ConcertRequest originalRequest = (ConcertRequest) args[i];
+//                originalRequest.setUserId(userId);
+//            }
+//        }
     }
 }

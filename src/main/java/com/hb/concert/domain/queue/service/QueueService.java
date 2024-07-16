@@ -3,10 +3,10 @@ package com.hb.concert.domain.queue.service;
 import com.hb.concert.application.queue.command.QueueCommand;
 import com.hb.concert.config.util.JwtUtil;
 import com.hb.concert.domain.common.enumerate.UseYn;
+import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueToken.TokenStatus;
 import com.hb.concert.domain.queue.QueueTokenRepository;
-import com.hb.concert.domain.reservation.Reservation;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,6 @@ public class QueueService {
     @Value("${queue.max.size}")
     private int MAX_QUEUE_SIZE;
 
-    private List<QueueToken> tokenList;
     private AtomicInteger nextPosition;
 
     private final QueueTokenRepository queueTokenRepository;
@@ -34,7 +33,6 @@ public class QueueService {
 
     @PostConstruct
     public void init() {
-        tokenList = new ArrayList<>();
         nextPosition = new AtomicInteger(1);
     }
 
@@ -48,6 +46,9 @@ public class QueueService {
     public QueueToken generateToken(QueueCommand.Generate command) {
         String token;
         UUID userId = command.userId();
+
+        List<QueueToken> tokenList = queueTokenRepository.findByStatus(TokenStatus.WAIT);
+
         QueueToken resultQueueToken = new QueueToken();
         if (tokenList.size() < MAX_QUEUE_SIZE) {
             token = jwtUtil.generateToken(userId, 0, 0);
@@ -59,7 +60,6 @@ public class QueueService {
                     .isActive(UseYn.Y)
                     .status(TokenStatus.PROCESS)
                     .build();
-            tokenList.add(queueToken);
             resultQueueToken = queueTokenRepository.save(queueToken);
         } else {
             int position = nextPosition.getAndIncrement();
@@ -87,6 +87,7 @@ public class QueueService {
      */
     @Transactional
     public void processCompletedToken(QueueCommand.TokenCompleted command) {
+        List<QueueToken> tokenList = queueTokenRepository.findByStatus(TokenStatus.PROCESS);
         Optional<QueueToken> queueToken = tokenList.stream()
                 .filter(token -> token.getUserId().equals(command.userId())
                         && token.getToken().equals(command.token())
@@ -190,5 +191,47 @@ public class QueueService {
      */
     public List<QueueToken> getAllProcessTokens() {
         return queueTokenRepository.findByStatus(TokenStatus.PROCESS);
+    }
+
+
+    /**
+     * 토큰정보 조회
+     * @param token
+     * @return
+     */
+    public QueueToken getTokenInfo(String token) {
+        return queueTokenRepository.findByToken(token);
+    }
+
+    /**
+     * 토큰정보 저장
+     * @param token
+     */
+    public void saveToken(QueueToken token) {
+        queueTokenRepository.save(token);
+    }
+
+    /**
+     * 토큰상태 및 대기열체크 후 서비스 이용단계로 진입
+     * @param userId
+     * @param token
+     */
+    public void tokenStatusAndWaitingCheckToProcess(UUID userId, String token) {
+        QueueToken tokenInfo = getTokenInfo(token);
+        if (tokenInfo.getStatus() != TokenStatus.WAIT) {
+            throw new CustomException.QueueException(CustomException.QueueException.TOKEN_NOT_IN_QUEUE);
+        }
+
+        // 대기열 순번이 0인지 체크
+        if (!isQueuePositionZero(token)) {
+            QueueToken queueToken = getUserToken(userId);
+            int position = queueToken.getPosition();
+            int waitTime = queueToken.getWaitTime();
+            throw new CustomException.QueueException(CustomException.QueueException.TOKEN_NOT_POSITION_ZERO + String.format(" 현재 대기순번: %d, 남은 대기시간: %d ", position, waitTime));
+        }
+
+        // 토큰 상태를 PROCESS로 변경
+        tokenInfo.setStatus(TokenStatus.PROCESS);
+        saveToken(tokenInfo);
     }
 }

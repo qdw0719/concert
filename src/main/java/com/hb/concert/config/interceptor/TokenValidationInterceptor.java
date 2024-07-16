@@ -1,11 +1,12 @@
 package com.hb.concert.config.interceptor;
 
-import com.hb.concert.common.exception.CustomException;
+import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.config.util.JwtUtil;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueTokenRepository;
 import com.hb.concert.presentation.concert.ConcertRequest;
+import com.hb.concert.presentation.concert.ConcertSeatRequest;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,29 +46,37 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
                 jwtUtil.validateToken(tokenStr);
             } catch (JwtException je) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
-                log.info("Token validation check, JwtException >> {}", je.getMessage());
+                log.error("Token validation check, JwtException >> {}", je.getMessage());
                 return false;
             }
 
             QueueToken queueToken = queueTokenRepository.findByToken(tokenStr);
             if (queueToken.getIsActive().equals(UseYn.N)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
-                log.info("Token IsActive check, isActive : {}", queueToken.getIsActive());
+                log.error("Token IsActive check, isActive : {}", queueToken.getIsActive());
                 return false;
             }
             if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
-                log.info("Token status check, status : {}", queueToken.getStatus());
+                log.error("Token status check, status : {}", queueToken.getStatus());
                 return false;
             }
-            // ConcertRequest에 userId 설정
-            Object[] args = handlerMethod.getMethodParameters();
-            for (Object arg : args) {
-                if (arg instanceof ConcertRequest) {
-                    ConcertRequest originRequest = (ConcertRequest) arg;
-                    originRequest.setUserId(userId);
-                }
+            // ConcertRequest에 userId, token 설정
+            String requestUri = request.getRequestURI();
+            if (requestUri.matches("/api/concerts/.*/details")) {
+                ConcertRequest concertRequest = new ConcertRequest(userId, "", tokenStr);
+                request.setAttribute("concertRequest", concertRequest);
+            } else if (requestUri.matches("/api/concerts/.*/details/.*/seats")) {
+                ConcertSeatRequest concertSeatRequest = new ConcertSeatRequest(userId, "", "", tokenStr);
+                request.setAttribute("concertSeatRequest", concertSeatRequest);
             }
+//            Object[] args = handlerMethod.getMethodParameters();
+//            for (Object arg : args) {
+//                if (arg instanceof ConcertRequest) {
+//                    ConcertRequest originRequest = (ConcertRequest) arg;
+//                    originRequest.userId(userId);
+//                }
+//            }
         }
         return true;
     }

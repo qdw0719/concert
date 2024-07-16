@@ -1,10 +1,16 @@
-package com.hb.concert.common.exception;
+package com.hb.concert.domain.exception;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
+@Getter @Setter
 public class CustomException extends ResponseStatusException {
+
+    private String method;
+    private String className;
 
     public CustomException(HttpStatusCode status, String message) {
         super(status);

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ConcertService {
@@ -49,7 +50,10 @@ public class ConcertService {
      * @return 예약 가능한 콘서트 ID 목록
      */
     public List<Concert> getAvailableConcerts(LocalDate currentDate) {
-        return concertDetailRepository.findDistinctConcertIdByConcertDateAfter(currentDate);
+        List<String> concertIdList = concertDetailRepository.findDistinctConcertIdByConcertDateAfter(currentDate);
+        return concertIdList.stream()
+                .map(concertRepository::findByConcertId)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -71,5 +75,24 @@ public class ConcertService {
                 .useYn(command.useYn())
                 .build();
         return concertSeatRepository.save(concertSeat);
+    }
+
+    /**
+     * concertId validation
+     * @param concertId
+     * @return boolean
+     */
+    public boolean isConcertCountNotFound(String concertId) {
+        return concertRepository.countByConcertId(concertId) == 0;
+    }
+
+    /**
+     * detailId validation
+     * @param concertId
+     * @param detailId
+     * @return boolean
+     */
+    public boolean isConcertDetailCountNotFound(String concertId, String detailId) {
+        return concertDetailRepository.countByConcertIdAndConcertDetailId(concertId, detailId) == 0;
     }
 }

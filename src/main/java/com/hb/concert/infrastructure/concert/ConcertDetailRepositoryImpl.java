@@ -29,7 +29,7 @@ public class ConcertDetailRepositoryImpl implements ConcertDetailRepository {
     }
 
     @Override
-    public List<Concert> findDistinctConcertIdByConcertDateAfter(LocalDate currentDate) {
+    public List<String> findDistinctConcertIdByConcertDateAfter(LocalDate currentDate) {
         return concertDetailJpaRepository.findDistinctConcertIdByConcertDateAfter(currentDate);
     }
 
@@ -49,7 +49,7 @@ public class ConcertDetailRepositoryImpl implements ConcertDetailRepository {
     }
 
     @Override
-    public int countByConcertIdAndDetailId(String concertId, String detailId) {
-        return concertDetailJpaRepository.countByConcertIdAndDetailId(concertId, detailId);
+    public int countByConcertIdAndConcertDetailId(String concertId, String detailId) {
+        return concertDetailJpaRepository.countByConcertIdAndConcertDetailId(concertId, detailId);
     }
 }

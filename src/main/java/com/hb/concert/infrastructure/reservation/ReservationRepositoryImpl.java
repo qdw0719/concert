@@ -50,7 +50,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public Reservation findTopByUserIdOrderByUserIdDesc(UUID userId) {
-        return reservationJpaRepository.findTopByOrderByUserIdDesc(userId);
+        return reservationJpaRepository.findTopByUserIdOrderByUserIdDesc(userId);
     }
 
     @Override

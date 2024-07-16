@@ -10,7 +10,7 @@ public interface ConcertDetailRepository {
 
     List<ConcertDetail> findByConcertIdAndConcertDateAfterAndValidState(String concertId, LocalDate currentDate, ValidState validState);
 
-    List<Concert> findDistinctConcertIdByConcertDateAfter(LocalDate currentDate);
+    List<String> findDistinctConcertIdByConcertDateAfter(LocalDate currentDate);
 
     List<ConcertDetail> findAll();
 
@@ -18,5 +18,5 @@ public interface ConcertDetailRepository {
 
     ConcertDetail findByConcertId(String concertId);
 
-    int countByConcertIdAndDetailId(String concertId, String detailId);
+    int countByConcertIdAndConcertDetailId(String concertId, String detailId);
 }

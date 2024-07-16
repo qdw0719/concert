@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ConcertJpaRepository extends JpaRepository<Concert, Long> {
     Concert findByConcertId(String concertId);
+
     List<Concert> findAll();
 
     int countByConcertId(String concertId);

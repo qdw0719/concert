@@ -103,4 +103,22 @@ public class ReservationService {
     public List<Integer> getConcertSeatIdByReservationId(String reservationId) {
         return reservationDetailRepository.findConcertSeatIdByReservationId(reservationId);
     }
+
+
+    /**
+     * 결제하지 않고 임시예약(임시좌석)시간이 지난 reservation건들 조회
+     * 
+     * @return List<Reservation>
+     */
+    public List<Reservation> getExpiredTargetList() {
+        return reservationRepository.findByIsPaidAndTemporaryGrantTimeBefore(UseYn.N, LocalDateTime.now());
+    }
+
+    /**
+     * 예약내역 저장
+     * @param reservation
+     */
+    public void saveReservation(Reservation reservation) {
+        reservationRepository.save(reservation);
+    }
 }

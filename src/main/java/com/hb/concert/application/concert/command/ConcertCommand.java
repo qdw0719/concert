@@ -14,8 +14,10 @@ public class ConcertCommand {
     ) {}
 
     public record getConcertSeat(
+            UUID userId,
             String concertId,
-            String detailId
+            String detailId,
+            String token
     ) {}
 
     public record saveConcertSeat(

@@ -1,9 +1,9 @@
 package com.hb.concert.domain.payment.service;
 
 import com.hb.concert.application.payment.command.PaymentCommand;
-import com.hb.concert.common.exception.CustomException;
-import com.hb.concert.common.exception.CustomException.BadRequestException;
-import com.hb.concert.common.exception.CustomException.NotFoundException;
+import com.hb.concert.domain.exception.CustomException;
+import com.hb.concert.domain.exception.CustomException.BadRequestException;
+import com.hb.concert.domain.exception.CustomException.NotFoundException;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.payment.Payment;
 import com.hb.concert.domain.payment.PaymentRepository;

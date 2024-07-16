@@ -13,11 +13,16 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class ConcertServiceTest {
+
+    @Mock
+    private ConcertRepository concertRepository;
 
     @Mock
     private ConcertDetailRepository concertDetailRepository;
@@ -28,6 +33,7 @@ class ConcertServiceTest {
     @InjectMocks
     private ConcertService concertService;
 
+    List<String> concertIdList;
     List<Concert> concertList;
     List<ConcertDetail> concertDetailList;
     List<ConcertSeat> concertSeatList;
@@ -35,6 +41,8 @@ class ConcertServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        concertIdList = List.of("concert1", "concert2", "concert3");
 
         concertList = List.of(
                 new Concert(1L, "concert1", "김일성 콘서트", "김일성"),
@@ -57,7 +65,7 @@ class ConcertServiceTest {
     @Test
     void 예약_가능한_콘서트_조회() {
 
-        when(concertDetailRepository.findDistinctConcertIdByConcertDateAfter(LocalDate.now())).thenReturn(concertList);
+        when(concertDetailRepository.findDistinctConcertIdByConcertDateAfter(LocalDate.now())).thenReturn(concertIdList);
 
         List<Concert> result = concertService.getAvailableConcerts(LocalDate.now());
 
@@ -86,16 +94,45 @@ class ConcertServiceTest {
 
     @Test
     void 콘서트_좌석_조회() {
-
+        UUID userId = UUID.randomUUID();
         String concertId = "concert1";
         String detailId = "detail1";
+        String token = "valid_token";
 
-        ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(concertId, detailId);
+        ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
 
         when(concertSeatRepository.findByConcertIdAndConcertDetailId(command.concertId(), command.detailId())).thenReturn(concertSeatList);
 
         List<ConcertSeat> result = concertService.findConcertSeats(command);
 
         assertEquals(50, result.size());
+    }
+
+    @Test
+    void 콘서트_좌석_배정() {
+        String concertId = "concert1";
+        String detailId = "detail1";
+
+        ConcertCommand.saveConcertSeat command = new ConcertCommand.saveConcertSeat(1, concertId, detailId, UseYn.Y);
+
+        ConcertSeat seat = new ConcertSeat(1L, 1, concertId, detailId, 17500, UseYn.Y);
+
+        when(concertSeatRepository.save(any(ConcertSeat.class))).thenReturn(seat);
+
+        ConcertSeat result = concertService.saveConcertSeat(command);
+
+        assertEquals(1, result.getConcertSeatId());
+        assertEquals(concertId, result.getConcertId());
+        assertEquals(detailId, result.getConcertDetailId());
+        assertEquals(UseYn.Y, result.getUseYn());
+    }
+
+    @Test
+    void 콘서트ID_validation() {
+        String concertId = "null";
+
+        when(concertRepository.countByConcertId(concertId)).thenReturn(0);
+
+        assertTrue(concertService.isConcertCountNotFound(concertId));
     }
 }

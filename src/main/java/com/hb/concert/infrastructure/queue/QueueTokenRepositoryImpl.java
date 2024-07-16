@@ -46,4 +46,9 @@ public class QueueTokenRepositoryImpl implements QueueTokenRepository {
     public List<QueueToken> findByStatusOrderByPositionAsc(TokenStatus status) {
         return queueTokenJpaRepository.findByStatusOrderByPositionAsc(status);
     }
+
+    @Override
+    public int countByStatus(TokenStatus status) {
+        return queueTokenJpaRepository.countByStatus(status);
+    }
 }

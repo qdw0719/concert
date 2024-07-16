@@ -1,7 +1,10 @@
 package com.hb.concert.config;
 
+import com.hb.concert.config.filter.LoggingFilter;
 import com.hb.concert.config.interceptor.TokenValidationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,5 +24,13 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/concerts/**/details",
                         "/api/concerts/**/details/**/seat"
                 );
+    }
+
+    @Bean
+    public FilterRegistrationBean<LoggingFilter> loggingFilter() {
+        FilterRegistrationBean<LoggingFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new LoggingFilter());
+        registrationBean.addUrlPatterns("/*");
+        return registrationBean;
     }
 }
