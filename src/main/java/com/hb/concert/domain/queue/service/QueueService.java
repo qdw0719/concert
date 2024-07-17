@@ -98,6 +98,7 @@ public class QueueService {
         if (queueToken.isPresent()) {
             QueueToken token = queueToken.get();
             token.setStatus(TokenStatus.EXPIRED);
+            token.setIsActive(UseYn.N);
             queueTokenRepository.save(token);
             tokenList.remove(token);
 

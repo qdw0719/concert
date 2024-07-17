@@ -51,16 +51,17 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
             }
 
             QueueToken queueToken = queueTokenRepository.findByToken(tokenStr);
-            if (queueToken.getIsActive().equals(UseYn.N)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
-                log.error("Token IsActive check, isActive : {}", queueToken.getIsActive());
-                return false;
-            }
             if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
                 log.error("Token status check, status : {}", queueToken.getStatus());
                 return false;
             }
+            if (queueToken.getIsActive().equals(UseYn.N)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
+                log.error("Token IsActive check, isActive : {}", queueToken.getIsActive());
+                return false;
+            }
+
             // ConcertRequest에 userId, token 설정
             String requestUri = request.getRequestURI();
             if (requestUri.matches("/api/concerts/.*/details")) {
