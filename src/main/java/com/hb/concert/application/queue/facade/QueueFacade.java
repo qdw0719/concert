@@ -1,8 +1,7 @@
 package com.hb.concert.application.queue.facade;
 
 import com.hb.concert.application.queue.command.QueueCommand;
-import com.hb.concert.application.reservation.facade.ReservationFacade;
-import com.hb.concert.config.util.JwtUtil;
+import com.hb.concert.support.config.util.JwtUtil;
 import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.reservation.Reservation;
@@ -45,8 +44,7 @@ public class QueueFacade {
     }
 
     /**
-     * 대기열에서 아무 작업도 하지 않는 token 만료처리
-     * 토큰발급 후 5분내에 예약요청 없는 토큰으로 판단
+     * 예약 후 또는 토큰 발급 후 아무 작업도 하지 않는 대상 만료처리
      */
     public void compulsoryExpiredTokens() {
         List<QueueToken> processTokens = queueService.getAllProcessTokens();
@@ -55,7 +53,10 @@ public class QueueFacade {
         for (QueueToken token : processTokens) {
             UUID userId = jwtUtil.getUserIdFromToken(token.getToken());
             Reservation reservationInfo = reservationService.getReservationInfoByUserToday(userId);
-            if (reservationInfo != null) {
+
+            List<UUID> expiredUserReservationInfo = reservationService.findUserNotReservationToday();
+
+            if (reservationInfo != null || !expiredUserReservationInfo.contains(token.getUserId())) {
                 isExpired = true;
 
                 queueService.expiredQueue(userId);

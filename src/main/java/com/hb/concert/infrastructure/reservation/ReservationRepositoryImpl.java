@@ -29,8 +29,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public int countByReservationId(String sreservationId) {
-        return reservationJpaRepository.countByReservationId(sreservationId);
+    public int countByReservationId(String reservationId) {
+        return reservationJpaRepository.countByReservationId(reservationId);
     }
 
     @Override
@@ -61,5 +61,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Reservation> findAllByIsPaid(UseYn useYn) {
         return reservationJpaRepository.findAllByIsPaid(useYn);
+    }
+
+    @Override
+    public List<UUID> findUserNotReservationToday(LocalDateTime startTime, LocalDateTime endTime) {
+        return reservationJpaRepository.findUserNotReservationToday(startTime, endTime);
     }
 }

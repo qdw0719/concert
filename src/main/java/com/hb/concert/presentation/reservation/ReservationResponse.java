@@ -1,24 +1,23 @@
 package com.hb.concert.presentation.reservation;
 
-import com.hb.concert.domain.common.enumerate.UseYn;
-import com.hb.concert.domain.reservation.Reservation;
+import com.hb.concert.application.reservation.command.ReservationCommand;
 
 public record ReservationResponse(
         String reservationId,
         String userId,
         String concertId,
         String concertDetailId,
-        String paymentId,
-        UseYn isPaid
+        String isPaid,
+        String seatId
 ) {
-    public static ReservationResponse of(Reservation reservation) {
+    public static ReservationResponse of(ReservationCommand.ResponseReservationInfo reservationInfo) {
         return new ReservationResponse(
-                reservation.getReservationId(),
-                reservation.getUserId().toString(),
-                reservation.getConcertId(),
-                reservation.getConcertDetailId(),
-                reservation.getPaymentId(),
-                reservation.getIsPaid()
+                reservationInfo.reservationId(),
+                reservationInfo.userId().toString(),
+                reservationInfo.concertId(),
+                reservationInfo.concertDetailId(),
+                reservationInfo.isPaid().toString(),
+                reservationInfo.seatId()
         );
     }
 }

@@ -11,9 +11,7 @@ import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.common.enumerate.ValidState;
 import com.hb.concert.domain.history.History;
-import com.hb.concert.domain.queue.QueueTokenRepository;
 import com.hb.concert.domain.reservation.Reservation;
-import com.hb.concert.domain.reservation.ReservationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +26,11 @@ public class ReservationFacade {
     private final HistoryService historyService;
     private final QueueService queueService;
 
-    private final ReservationRepository reservationRepository;
-
-    public ReservationFacade(ReservationService reservationService, ConcertService concertService, HistoryService historyService, QueueService queueService, ReservationRepository reservationRepository) {
+    public ReservationFacade(ReservationService reservationService, ConcertService concertService, HistoryService historyService, QueueService queueService) {
         this.reservationService = reservationService;
         this.concertService = concertService;
         this.historyService = historyService;
         this.queueService = queueService;
-        this.reservationRepository = reservationRepository;
     }
 
     /**
@@ -45,7 +40,7 @@ public class ReservationFacade {
      * @return Reservation 예약 내역
      */
     @Transactional
-    public Reservation createReservation(ReservationCommand.Create command) {
+    public ReservationCommand.ResponseReservationInfo createReservation(ReservationCommand.Create command) {
         Reservation reservation = reservationService.createReservation(command);
 
         HistoryCreateCommand.HistoryCreate historyCommand = new HistoryCreateCommand.HistoryCreate(
@@ -64,7 +59,14 @@ public class ReservationFacade {
         ReservationDetailCommand.CreateReservationDetail detailCommand = new ReservationDetailCommand.CreateReservationDetail(reservation.getReservationId(), concertSeatIdList);
         reservationService.createReservationDetails(detailCommand, concertSeatIdList);
 
-        return reservation;
+        return new ReservationCommand.ResponseReservationInfo(
+                reservation.getReservationId(),
+                reservation.getUserId(),
+                reservation.getConcertId(),
+                reservation.getConcertDetailId(),
+                concertSeatIdList.toString(),
+                UseYn.N
+        );
     }
 
 
@@ -74,7 +76,7 @@ public class ReservationFacade {
      * @description 1분 schedule
      */
     @Transactional
-    public void expireReservations() {
+    public void expiredReservations() {
         List<Reservation> expiredReservations = reservationService.getExpiredTargetList();
 
         for (Reservation reservation : expiredReservations) {

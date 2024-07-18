@@ -1,12 +1,15 @@
 package com.hb.concert.domain.user.service;
 
 import com.hb.concert.application.user.command.UserCommand;
+import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.domain.exception.CustomException.NotFoundException;
 
 import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -27,6 +30,15 @@ public class UserService {
         User user = userRepository.findByUserId(command.userId())
                 .orElseThrow(() -> new NotFoundException(NotFoundException.USER_NOT_FOUND));
         user.setBalance(user.getBalance() + command.amount());
+        userRepository.save(user);
+    }
+
+    public User getUserBalance(UUID userId) {
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException.NotFoundException(NotFoundException.USER_NOT_FOUND));
+    }
+
+    public void saveUser(User user) {
         userRepository.save(user);
     }
 }

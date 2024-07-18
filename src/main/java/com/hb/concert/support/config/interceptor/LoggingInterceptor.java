@@ -1,4 +1,4 @@
-package com.hb.concert.config.interceptor;
+package com.hb.concert.support.config.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,8 +31,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         if (ex != null) {
             log.error("Request raised exception: " + ex.getMessage());
         }

@@ -1,4 +1,4 @@
-package com.hb.concert.config;
+package com.hb.concert.support.config;
 
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.common.enumerate.ValidState;
@@ -134,7 +134,7 @@ public class DataInitializer {
             queueTokenRepository.save(normalToken);
 
             QueueToken errorToken1 = new QueueToken().builder()
-                    .id(1L)
+                    .id(2L)
                     .token("Bearer ErrorToken1")
                     .userId(UUID.randomUUID())
                     .position(5)
@@ -146,7 +146,7 @@ public class DataInitializer {
             queueTokenRepository.save(errorToken1);
 
             QueueToken errorToken2 = new QueueToken().builder()
-                    .id(1L)
+                    .id(3L)
                     .token("Bearer ErrorToken2")
                     .userId(UUID.randomUUID())
                     .position(0)

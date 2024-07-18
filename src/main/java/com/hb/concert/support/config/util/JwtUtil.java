@@ -1,4 +1,4 @@
-package com.hb.concert.config.util;
+package com.hb.concert.support.config.util;
 
 
 import io.jsonwebtoken.Claims;

@@ -24,4 +24,6 @@ public interface ReservationRepository {
     Reservation findTopByUserIdAndReservationTimeBetweenOrderByUserIdDesc(UUID userId, LocalDateTime min, LocalDateTime max);
 
     List<Reservation> findAllByIsPaid(UseYn useYn);
+
+    List<UUID> findUserNotReservationToday(LocalDateTime startTime, LocalDateTime endTime);
 }

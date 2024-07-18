@@ -1,7 +1,7 @@
-package com.hb.concert.config;
+package com.hb.concert.support.config;
 
-import com.hb.concert.config.filter.LoggingFilter;
-import com.hb.concert.config.interceptor.TokenValidationInterceptor;
+import com.hb.concert.support.config.filter.LoggingFilter;
+import com.hb.concert.support.config.interceptor.TokenValidationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

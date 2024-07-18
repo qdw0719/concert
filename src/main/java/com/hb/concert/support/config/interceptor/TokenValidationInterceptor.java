@@ -1,7 +1,7 @@
-package com.hb.concert.config.interceptor;
+package com.hb.concert.support.config.interceptor;
 
 import com.hb.concert.domain.exception.CustomException;
-import com.hb.concert.config.util.JwtUtil;
+import com.hb.concert.support.config.util.JwtUtil;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueTokenRepository;

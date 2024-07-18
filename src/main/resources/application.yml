@@ -16,9 +16,9 @@ spring:
 jwt:
   secretkey: 67CV7JiB7KSA7Iqk7ZSE66eB67aA7Yq47Iqk7YSw65SU
 
-queue:
-  max:
-    size: 50
+#queue:
+#  max:
+#    size: 50
 
 server:
   port: 9090

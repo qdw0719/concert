@@ -21,17 +21,10 @@ import static org.mockito.Mockito.when;
 
 class ConcertServiceTest {
 
-    @Mock
-    private ConcertRepository concertRepository;
-
-    @Mock
-    private ConcertDetailRepository concertDetailRepository;
-
-    @Mock
-    private ConcertSeatRepository concertSeatRepository;
-
-    @InjectMocks
-    private ConcertService concertService;
+    @Mock private ConcertRepository concertRepository;
+    @Mock private ConcertDetailRepository concertDetailRepository;
+    @Mock private ConcertSeatRepository concertSeatRepository;
+    @InjectMocks private ConcertService concertService;
 
     List<String> concertIdList;
     List<Concert> concertList;
@@ -40,6 +33,7 @@ class ConcertServiceTest {
 
     @BeforeEach
     void setUp() {
+        // given
         MockitoAnnotations.openMocks(this);
 
         concertIdList = List.of("concert1", "concert2", "concert3");
@@ -64,36 +58,43 @@ class ConcertServiceTest {
 
     @Test
     void 예약_가능한_콘서트_조회() {
-
+        // when
         when(concertDetailRepository.findDistinctConcertIdByConcertDateAfter(LocalDate.now())).thenReturn(concertIdList);
 
         List<Concert> result = concertService.getAvailableConcerts(LocalDate.now());
 
+        // then
         assertEquals(3, result.size());
     }
 
     @Test
     void 예약_가능한_콘서트_일정_조회() {
+        // given
         String concertId = "concert1";
 
+        // when
         when(concertDetailRepository.findByConcertIdAndConcertDateAfterAndValidState(concertId, LocalDate.now(), ValidState.VALID)).thenReturn(concertDetailList);
 
         List<ConcertDetail> result = concertService.findAvailableDetails(concertId, LocalDate.now());
 
+        // then
         assertEquals(3, result.size());
     }
 
     @Test
     void 예약_가능한_콘서트_정보_없음() {
+        // when
         when(concertDetailRepository.findDistinctConcertIdByConcertDateAfter(LocalDate.now())).thenReturn(new ArrayList());
 
         List<Concert> result = concertService.getAvailableConcerts(LocalDate.now());
 
+        // then
         assertEquals(0, result.size());
     }
 
     @Test
     void 콘서트_좌석_조회() {
+        // given
         UUID userId = UUID.randomUUID();
         String concertId = "concert1";
         String detailId = "detail1";
@@ -101,15 +102,18 @@ class ConcertServiceTest {
 
         ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
 
+        // when
         when(concertSeatRepository.findByConcertIdAndConcertDetailId(command.concertId(), command.detailId())).thenReturn(concertSeatList);
 
         List<ConcertSeat> result = concertService.findConcertSeats(command);
 
+        // then
         assertEquals(50, result.size());
     }
 
     @Test
     void 콘서트_좌석_배정() {
+        // given
         String concertId = "concert1";
         String detailId = "detail1";
 
@@ -117,10 +121,12 @@ class ConcertServiceTest {
 
         ConcertSeat seat = new ConcertSeat(1L, 1, concertId, detailId, 17500, UseYn.Y);
 
+        // when
         when(concertSeatRepository.save(any(ConcertSeat.class))).thenReturn(seat);
 
         ConcertSeat result = concertService.saveConcertSeat(command);
 
+        // then
         assertEquals(1, result.getConcertSeatId());
         assertEquals(concertId, result.getConcertId());
         assertEquals(detailId, result.getConcertDetailId());
@@ -129,10 +135,13 @@ class ConcertServiceTest {
 
     @Test
     void 콘서트ID_validation() {
+        // given
         String concertId = "null";
 
+        // when
         when(concertRepository.countByConcertId(concertId)).thenReturn(0);
 
+        // then
         assertTrue(concertService.isConcertCountNotFound(concertId));
     }
 }

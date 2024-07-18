@@ -24,12 +24,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ConcertControllerTest {
 
     @Autowired MockMvc mockMvc;
-
     @Autowired ConcertController concertController;
+    @Autowired private QueueService queueService;
 
     ObjectMapper mapper = new ObjectMapper();
-    @Autowired
-    private QueueService queueService;
 
     @BeforeEach
     void setUp() {

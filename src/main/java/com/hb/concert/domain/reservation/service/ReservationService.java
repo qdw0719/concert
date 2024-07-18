@@ -2,7 +2,7 @@ package com.hb.concert.domain.reservation.service;
 
 import com.hb.concert.application.reservation.command.ReservationCommand;
 import com.hb.concert.application.reservation.command.ReservationDetailCommand;
-import com.hb.concert.common.CommonUtil;
+import com.hb.concert.support.CommonUtil;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.common.enumerate.ValidState;
 import com.hb.concert.domain.reservation.Reservation;
@@ -12,13 +12,15 @@ import com.hb.concert.domain.reservation.ReservationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.hb.concert.common.CommonUtil.padLeftZeros;
-import static com.hb.concert.common.CommonUtil.padRightZeros;
+import static com.hb.concert.support.CommonUtil.padLeftZeros;
+import static com.hb.concert.support.CommonUtil.padRightZeros;
 
 @Service
 public class ReservationService {
@@ -50,11 +52,11 @@ public class ReservationService {
                 .validState(ValidState.VALID)
                 .build();
 
-        reservationRepository.save(reservation);
+        saveReservation(reservation);
 
         return reservation;
     }
-    
+
     /**
      * 예약번호 생성
      *
@@ -107,7 +109,7 @@ public class ReservationService {
 
     /**
      * 결제하지 않고 임시예약(임시좌석)시간이 지난 reservation건들 조회
-     * 
+     *
      * @return List<Reservation>
      */
     public List<Reservation> getExpiredTargetList() {
@@ -120,5 +122,25 @@ public class ReservationService {
      */
     public void saveReservation(Reservation reservation) {
         reservationRepository.save(reservation);
+    }
+
+
+    /**
+     * 오늘 날짜에 예약한 유저 조회
+     * @return List<UUID>
+     */
+    public List<UUID> findUserNotReservationToday() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startTime = today.atStartOfDay();
+        LocalDateTime endTime = today.atTime(LocalTime.MAX);
+        return reservationRepository.findUserNotReservationToday(startTime, endTime);
+    }
+
+    public boolean hasReservation(String reservationId) {
+        return reservationRepository.countByReservationId(reservationId) > 0;
+    }
+
+    public Reservation getReservationInfo(String reservationId) {
+        return reservationRepository.findByReservationId(reservationId);
     }
 }

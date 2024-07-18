@@ -1,4 +1,4 @@
-package com.hb.concert.config.filter;
+package com.hb.concert.support.config.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

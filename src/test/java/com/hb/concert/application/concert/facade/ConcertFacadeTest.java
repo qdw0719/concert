@@ -8,7 +8,6 @@ import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueTokenRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -26,12 +25,12 @@ class ConcertFacadeTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         // 초기 데이터 DataInitialize.class 로 대체
     }
 
     @Test
     void 콘서트_예약_조회_토큰이_대기중이_아닐_때() {
+        // given
         String concertId = "concert1";
         String token = "대기중이아닌토큰";
         UUID userid = UUID.randomUUID();
@@ -46,6 +45,7 @@ class ConcertFacadeTest {
         queueToken.setStatus(QueueToken.TokenStatus.PROCESS);
         queueTokenRepository.save(queueToken);
 
+        // when then
         assertThrows(CustomException.QueueException.class, () -> {
            concertFacade.getAvailableDetails(command);
         });
@@ -53,6 +53,7 @@ class ConcertFacadeTest {
 
     @Test
     void 콘서트_예약_조회_대기순번이_0이_아닐_때() {
+        // given
         String concertId = "concert1";
         String token = "exampleValidToken";
         UUID userid = UUID.randomUUID();
@@ -69,6 +70,7 @@ class ConcertFacadeTest {
         queueToken.setWaitTime(25);
         queueTokenRepository.save(queueToken);
 
+        // when then
         assertThrows(CustomException.QueueException.class, () -> {
            concertFacade.getAvailableDetails(command);
         });
@@ -76,12 +78,15 @@ class ConcertFacadeTest {
 
     @Test
     void 콘서트ID_잘못_주어졌을_때() {
+        // given
         UUID userId = UUID.randomUUID();
         String concertId = "잘못된콘서트id";
         String detailId = "detail1";
         String token = "valid_token";
 
         ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
+
+        // when then
         assertThrows(CustomException.NotFoundException.class, () -> {
            concertFacade.getConcertSeat(command);
         });
@@ -89,12 +94,15 @@ class ConcertFacadeTest {
 
     @Test
     void 콘서트_상세id_잘못_주어졌을_때(){
+        // given
         UUID userId = UUID.randomUUID();
         String concertId = "concert1";
         String detailId = "잘못된상세id";
         String token = "valid_token";
 
         ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
+
+        // when then
         assertThrows(CustomException.NotFoundException.class, () -> {
             concertFacade.getConcertSeat(command);
         });
@@ -102,6 +110,7 @@ class ConcertFacadeTest {
 
     @Test
     void 콘서트_좌석_조회() {
+        // given
         UUID userId = UUID.randomUUID();
         String concertId = "concert1";
         String detailId = "detail1";
@@ -110,6 +119,7 @@ class ConcertFacadeTest {
         ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
         List<ConcertSeat> result = concertFacade.getConcertSeat(command);
 
+        // when then
         assertNotNull(result);
         assertEquals(50, result.size());
         assertEquals(concertId, result.get(0).getConcertId());

@@ -2,10 +2,9 @@ package com.hb.concert.aspect;
 
 import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.domain.exception.CustomException.BadRequestException;
-import com.hb.concert.config.util.JwtUtil;
+import com.hb.concert.support.config.util.JwtUtil;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueTokenRepository;
-import com.hb.concert.presentation.concert.ConcertRequest;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;

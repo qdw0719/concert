@@ -20,7 +20,7 @@ public class BatchJobConfig {
 
     @Scheduled(fixedRate = 60000) // 1분마다 실행
     public void checkExpiredReservations() {
-        reservationFacade.expireReservations();
+        reservationFacade.expiredReservations();
     }
 
     @Scheduled(fixedRate = 60000)
