@@ -14,4 +14,6 @@ public interface ConcertSeatRepository {
     List<ConcertSeat> saveAll(List<ConcertSeat> concertSeatList);
 
     int count();
+
+    ConcertSeat findByConcertIdAndConcertDetailIdAndConcertSeatId(String concertId, String detailId, Integer seatId);
 }

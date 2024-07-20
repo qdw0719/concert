@@ -50,7 +50,7 @@ public class ReservationFacade {
 
         List<Integer> concertSeatIdList = command.seatIdList();
         for (Integer seatId : concertSeatIdList) {
-            ConcertCommand.saveConcertSeat seatCommand = new ConcertCommand.saveConcertSeat(
+            ConcertCommand.SaveConcertSeat seatCommand = new ConcertCommand.SaveConcertSeat(
                     seatId, reservation.getConcertId(), reservation.getConcertDetailId(), UseYn.N
             );
             concertService.saveConcertSeat(seatCommand);
@@ -89,7 +89,7 @@ public class ReservationFacade {
 
             List<Integer> reservedSeatIdList = reservationService.getConcertSeatIdByReservationId(reservation.getReservationId());
             for (Integer seatId : reservedSeatIdList) {
-                ConcertCommand.saveConcertSeat seatCommand = new ConcertCommand.saveConcertSeat(
+                ConcertCommand.SaveConcertSeat seatCommand = new ConcertCommand.SaveConcertSeat(
                         seatId, reservation.getConcertId(), reservation.getConcertDetailId(), UseYn.Y
                 );
                 concertService.saveConcertSeat(seatCommand);

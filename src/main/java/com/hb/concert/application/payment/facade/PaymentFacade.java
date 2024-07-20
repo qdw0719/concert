@@ -51,13 +51,18 @@ public class PaymentFacade {
      */
     @Transactional
     public Payment createPayment(PaymentCommand.CreatePayment command) {
+        log.info("Request payment by user: {}", command.userId());
+
         if (!reservationService.hasReservation(command.reservationId())) {
+            log.warn("Reservation not found for id: {}", command.reservationId());
             throw new CustomException.NotFoundException(CustomException.NotFoundException.RESERVATION_NOT_FOUND);
         }
 
         Reservation reservationInfo = reservationService.getReservationInfoByUser(command.userId());
 
         if (reservationInfo.getReservationTime().isBefore(reservationInfo.getTemporaryGrantTime())) {
+            log.warn("Payment request timeout for user: {}", command.userId());
+
             queueService.expiredQueue(reservationInfo.getUserId());
 
             HistoryCreateCommand.HistoryCreate historyCommand = new HistoryCreateCommand.HistoryCreate(
@@ -67,7 +72,7 @@ public class PaymentFacade {
 
             List<Integer> reservedSeatIdList = reservationService.getConcertSeatIdByReservationId(reservationInfo.getReservationId());
             for (Integer seatId : reservedSeatIdList) {
-                ConcertCommand.saveConcertSeat seatCommand = new ConcertCommand.saveConcertSeat(
+                ConcertCommand.SaveConcertSeat seatCommand = new ConcertCommand.SaveConcertSeat(
                         seatId, reservationInfo.getConcertId(), reservationInfo.getConcertDetailId(), UseYn.Y
                 );
                 concertService.saveConcertSeat(seatCommand);
@@ -76,14 +81,7 @@ public class PaymentFacade {
             throw new CustomException.BadRequestException(BadRequestException.PAYMENT_REQUEST_TIMEOUT);
         }
 
-        User user = userService.getUserBalance(command.userId());
-        if (user.getBalance() < command.totalPrice()) {
-            throw new CustomException.BadRequestException(BadRequestException.PAYMENT_NOTENOUPH_AMOUNT);
-        }
-
-        // 유저 잔액차감
-        user.setBalance(user.getBalance() - command.totalPrice());
-        userService.saveUser(user);
+        userService.deductBalance(command.userId(), command.totalPrice());
 
         // 결제 생성
         Payment payment = paymentService.createPayment(command);

@@ -8,7 +8,6 @@ import com.hb.concert.domain.concert.Concert;
 import com.hb.concert.domain.concert.ConcertDetail;
 import com.hb.concert.domain.concert.ConcertSeat;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,9 +39,7 @@ public class ConcertFacade {
      */
     public List<ConcertDetail> getAvailableDetails(ConcertCommand.GetAvailableDetails command) {
         validationConcert(command.concertId(), null);
-
         queueService.tokenStatusAndWaitingCheckToProcess(command.userId(), command.token());
-
         return concertService.findAvailableDetails(command.concertId(), command.currentDate());
     }
 
@@ -52,12 +49,9 @@ public class ConcertFacade {
      * @param command 콘서트 ID, detailId 일정ID
      * @return 예약 가능한 콘서트 좌석 정보 목록
      */
-    @Transactional
-    public List<ConcertSeat> getConcertSeat(ConcertCommand.getConcertSeat command) {
+    public List<ConcertSeat> getConcertSeat(ConcertCommand.GetConcertSeat command) {
         validationConcert(command.concertId(), command.detailId());
-
         queueService.tokenStatusAndWaitingCheckToProcess(command.userId(), command.token());
-
         return concertService.findConcertSeats(command);
     }
 
@@ -70,7 +64,6 @@ public class ConcertFacade {
         if (concertService.isConcertCountNotFound(concertId)) {
             throw new CustomException.NotFoundException(CustomException.NotFoundException.CONCERT_NOT_FOUND);
         }
-
         if (detailId != null && concertService.isConcertDetailCountNotFound(concertId, detailId)) {
             throw new CustomException.NotFoundException(CustomException.NotFoundException.CONCERT_NOT_FOUND);
         }

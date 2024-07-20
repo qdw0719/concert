@@ -11,7 +11,7 @@ public record ConcertSeatRequest(
         String token
 ) {
 
-    public ConcertCommand.getConcertSeat toGetConcertSeatCommand() {
-        return new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
+    public ConcertCommand.GetConcertSeat toGetConcertSeatCommand() {
+        return new ConcertCommand.GetConcertSeat(userId, concertId, detailId, token);
     }
 }

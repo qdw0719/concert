@@ -13,21 +13,21 @@ public class ConcertCommand {
             String token
     ) {}
 
-    public record getConcertSeat(
+    public record GetConcertSeat(
             UUID userId,
             String concertId,
             String detailId,
             String token
     ) {}
 
-    public record saveConcertSeat(
+    public record SaveConcertSeat(
             Integer concertSeatId,
             String concertId,
             String concertDetailId,
             UseYn useYn
     ) {}
 
-    public record validation(
+    public record Validation(
             String concertId,
             String detailId
     ) {}

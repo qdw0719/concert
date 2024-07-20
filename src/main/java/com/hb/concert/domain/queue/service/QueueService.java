@@ -201,6 +201,7 @@ public class QueueService {
      * 토큰정보 저장
      * @param token
      */
+    @Transactional
     public void saveToken(QueueToken token) {
         queueTokenRepository.save(token);
     }

@@ -84,7 +84,7 @@ class ConcertFacadeTest {
         String detailId = "detail1";
         String token = "valid_token";
 
-        ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
+        ConcertCommand.GetConcertSeat command = new ConcertCommand.GetConcertSeat(userId, concertId, detailId, token);
 
         // when then
         assertThrows(CustomException.NotFoundException.class, () -> {
@@ -100,7 +100,7 @@ class ConcertFacadeTest {
         String detailId = "잘못된상세id";
         String token = "valid_token";
 
-        ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
+        ConcertCommand.GetConcertSeat command = new ConcertCommand.GetConcertSeat(userId, concertId, detailId, token);
 
         // when then
         assertThrows(CustomException.NotFoundException.class, () -> {
@@ -116,7 +116,7 @@ class ConcertFacadeTest {
         String detailId = "detail1";
         String token = "Bearer TestToken1";
 
-        ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
+        ConcertCommand.GetConcertSeat command = new ConcertCommand.GetConcertSeat(userId, concertId, detailId, token);
         List<ConcertSeat> result = concertFacade.getConcertSeat(command);
 
         // when then

@@ -39,4 +39,9 @@ public class ConcertSeatRepositoryImpl implements ConcertSeatRepository {
     public int count() {
         return (int) concertSeatJpaRepository.count();
     }
+
+    @Override
+    public ConcertSeat findByConcertIdAndConcertDetailIdAndConcertSeatId(String concertId, String detailId, Integer seatId) {
+        return concertSeatJpaRepository.findByConcertIdAndConcertDetailIdAndConcertSeatId(concertId, detailId, seatId);
+    }
 }

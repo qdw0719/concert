@@ -120,6 +120,7 @@ public class ReservationService {
      * 예약내역 저장
      * @param reservation
      */
+    @Transactional
     public void saveReservation(Reservation reservation) {
         reservationRepository.save(reservation);
     }

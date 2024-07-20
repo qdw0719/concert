@@ -16,4 +16,6 @@ public interface ConcertSeatJpaRepository extends JpaRepository<ConcertSeat, Lon
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select cs from ConcertSeat cs where cs.concertId = :concertId and cs.concertDetailId = :concertDetailId")
     List<ConcertSeat> findByConcertIdAndConcertDetailId(String concertId, String concertDetailId);
+
+    ConcertSeat findByConcertIdAndConcertDetailIdAndConcertSeatId(String concertId, String detailId, Integer seatId);
 }

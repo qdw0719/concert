@@ -100,7 +100,7 @@ class ConcertServiceTest {
         String detailId = "detail1";
         String token = "valid_token";
 
-        ConcertCommand.getConcertSeat command = new ConcertCommand.getConcertSeat(userId, concertId, detailId, token);
+        ConcertCommand.GetConcertSeat command = new ConcertCommand.GetConcertSeat(userId, concertId, detailId, token);
 
         // when
         when(concertSeatRepository.findByConcertIdAndConcertDetailId(command.concertId(), command.detailId())).thenReturn(concertSeatList);
@@ -117,7 +117,7 @@ class ConcertServiceTest {
         String concertId = "concert1";
         String detailId = "detail1";
 
-        ConcertCommand.saveConcertSeat command = new ConcertCommand.saveConcertSeat(1, concertId, detailId, UseYn.Y);
+        ConcertCommand.SaveConcertSeat command = new ConcertCommand.SaveConcertSeat(1, concertId, detailId, UseYn.Y);
 
         ConcertSeat seat = new ConcertSeat(1L, 1, concertId, detailId, 17500, UseYn.Y);
 

@@ -1,22 +1,30 @@
 package com.hb.concert.domain.concert.service;
 
 import com.hb.concert.application.concert.command.ConcertCommand;
+import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.common.enumerate.ValidState;
 import com.hb.concert.domain.concert.*;
+import com.hb.concert.domain.exception.CustomException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class ConcertService {
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     private final ConcertRepository concertRepository;
     private final ConcertDetailRepository concertDetailRepository;
     private final ConcertSeatRepository concertSeatRepository;
 
-    public ConcertService(ConcertRepository concertRepository, ConcertDetailRepository concertDetailRepository, ConcertSeatRepository concertSeatRepository) {
+    public ConcertService(RedisTemplate<String, Object> redisTemplate, ConcertRepository concertRepository, ConcertDetailRepository concertDetailRepository, ConcertSeatRepository concertSeatRepository) {
+        this.redisTemplate = redisTemplate;
         this.concertRepository = concertRepository;
         this.concertDetailRepository = concertDetailRepository;
         this.concertSeatRepository = concertSeatRepository;
@@ -62,19 +70,44 @@ public class ConcertService {
      * @param command  콘서트 ID, detailId 일정ID
      * @return 예약 가능한 콘서트 좌석 목록
      */
-    public List<ConcertSeat> findConcertSeats(ConcertCommand.getConcertSeat command) {
+    public List<ConcertSeat> findConcertSeats(ConcertCommand.GetConcertSeat command) {
         return concertSeatRepository.findByConcertIdAndConcertDetailId(command.concertId(), command.detailId());
     }
 
+    /**
+     * 콘서트 좌석예약
+     *
+     * @param command
+     * @return
+     */
+    @Transactional
+    public ConcertSeat saveConcertSeat(ConcertCommand.SaveConcertSeat command) {
 
-    public ConcertSeat saveConcertSeat(ConcertCommand.saveConcertSeat command) {
-        ConcertSeat concertSeat = new ConcertSeat().builder()
-                .concertSeatId(command.concertSeatId())
-                .concertDetailId(command.concertDetailId())
-                .concertId(command.concertId())
-                .useYn(command.useYn())
-                .build();
-        return concertSeatRepository.save(concertSeat);
+        String lockKey = new StringBuilder()
+                .append("ConcertSeatLock:")
+                .append(command.concertId())
+                .append(":")
+                .append(command.concertSeatId())
+                .toString();
+
+        Boolean isLocked = redisTemplate.opsForValue().setIfAbsent(lockKey, "locked", 5, TimeUnit.SECONDS);
+
+        if (Boolean.TRUE.equals(isLocked)) {
+            try {
+                ConcertSeat concertSeat = concertSeatRepository.findByConcertIdAndConcertDetailIdAndConcertSeatId(command.concertId(), command.concertDetailId(), command.concertSeatId());
+
+                if (concertSeat.getUseYn() == UseYn.N) {
+                    throw new CustomException.BadRequestException(CustomException.BadRequestException.ALREADY_RESERVED);
+                }
+
+                concertSeat.setUseYn(UseYn.N);
+                return concertSeatRepository.save(concertSeat);
+            } finally {
+                redisTemplate.delete(lockKey);
+            }
+        } else {
+            throw new CustomException.InvalidServerException(CustomException.InvalidServerException.NOT_SELECTED_SEAT);
+        }
     }
 
     /**
