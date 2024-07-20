@@ -6,6 +6,7 @@ import com.hb.concert.domain.exception.CustomException.NotFoundException;
 
 import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@Service
+@Service @Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -41,7 +42,11 @@ public class UserService {
 
                 user.setBalance(user.getBalance() + command.amount());
                 userRepository.save(user);
+            } catch (Exception e) {
+                log.error("Error while charging balance: {}", e.getMessage());
+                throw e;
             } finally {
+                log.warn("Unable to acquire lock for user balance: {}", command.userId());
                 redisTemplate.delete(lockKey);
             }
         } else {
@@ -52,7 +57,8 @@ public class UserService {
     /**
      * 유저 포인트 차감하는 메서드
      *
-     * @param command
+     * @param userId
+     * @param amount
      *
      */
     @Transactional
@@ -71,17 +77,16 @@ public class UserService {
 
                 user.setBalance(user.getBalance() - amount);
                 userRepository.save(user);
+            } catch (Exception e) {
+                log.error("Error while deducting balance: {}", e.getMessage());
+                throw e;
             } finally {
                 redisTemplate.delete(lockKey);
             }
         } else {
+            log.warn("Unable to acquire lock for user balance: {}", userId);
             throw new CustomException.InvalidServerException(CustomException.InvalidServerException.NOT_DEDUCT_BALANCE);
         }
-    }
-
-    public User getUserBalance(UUID userId) {
-        return userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException.NotFoundException(NotFoundException.USER_NOT_FOUND));
     }
 
     @Transactional

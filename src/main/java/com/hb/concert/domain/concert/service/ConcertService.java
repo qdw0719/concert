@@ -5,6 +5,7 @@ import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.common.enumerate.ValidState;
 import com.hb.concert.domain.concert.*;
 import com.hb.concert.domain.exception.CustomException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Service
+@Service @Slf4j
 public class ConcertService {
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -82,7 +83,6 @@ public class ConcertService {
      */
     @Transactional
     public ConcertSeat saveConcertSeat(ConcertCommand.SaveConcertSeat command) {
-
         String lockKey = new StringBuilder()
                 .append("ConcertSeatLock:")
                 .append(command.concertId())
@@ -102,10 +102,14 @@ public class ConcertService {
 
                 concertSeat.setUseYn(UseYn.N);
                 return concertSeatRepository.save(concertSeat);
+            } catch (Exception e) {
+                log.error("Error while saving concert seat: {}", e.getMessage());
+                throw e;
             } finally {
                 redisTemplate.delete(lockKey);
             }
         } else {
+            log.warn("Unable to acquire lock for seat: {}", command.concertSeatId());
             throw new CustomException.InvalidServerException(CustomException.InvalidServerException.NOT_SELECTED_SEAT);
         }
     }
