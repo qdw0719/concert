@@ -71,13 +71,6 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
                 ConcertSeatRequest concertSeatRequest = new ConcertSeatRequest(userId, "", "", tokenStr);
                 request.setAttribute("concertSeatRequest", concertSeatRequest);
             }
-//            Object[] args = handlerMethod.getMethodParameters();
-//            for (Object arg : args) {
-//                if (arg instanceof ConcertRequest) {
-//                    ConcertRequest originRequest = (ConcertRequest) arg;
-//                    originRequest.userId(userId);
-//                }
-//            }
         }
         return true;
     }

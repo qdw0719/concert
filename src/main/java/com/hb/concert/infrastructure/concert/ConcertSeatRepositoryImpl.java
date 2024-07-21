@@ -15,11 +15,6 @@ public class ConcertSeatRepositoryImpl implements ConcertSeatRepository {
         this.concertSeatJpaRepository = concertSeatJpaRepository;
     }
 
-//    @Override
-//    public List<ConcertSeat> findByConcertIdAndUseYn(String concertId, UseYn useYn) {
-//        return concertSeatJpaRepository.findByConcertIdAndUseYn(concertId, useYn);
-//    }
-
     @Override
     public List<ConcertSeat> findByConcertIdAndConcertDetailId(String concertId, String concertDetailId) {
         return concertSeatJpaRepository.findByConcertIdAndConcertDetailId(concertId, concertDetailId);

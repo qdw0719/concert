@@ -48,14 +48,5 @@ public class TokenValidationAspect {
         if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
             throw new CustomException.BadRequestException(BadRequestException.TOKEN_UNAUTHORIZED);
         }
-
-        // ConcertRequest에 userId 설정
-//        Object[] args = joinPoint.getArgs();
-//        for (int i = 0; i < args.length; i++) {
-//            if (args[i] instanceof ConcertRequest) {
-//                ConcertRequest originalRequest = (ConcertRequest) args[i];
-//                originalRequest.setUserId(userId);
-//            }
-//        }
     }
 }
