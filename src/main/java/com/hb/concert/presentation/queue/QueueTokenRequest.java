@@ -15,4 +15,8 @@ public record QueueTokenRequest(
     QueueCommand.TokenCompleted toTokenCompleted() {
         return new QueueCommand.TokenCompleted(userId, token);
     }
+
+    QueueCommand.TokenInfoByUser toTokenInfoByUser() {
+        return new QueueCommand.TokenInfoByUser(userId, token);
+    }
 }

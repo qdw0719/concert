@@ -5,7 +5,6 @@ import com.hb.concert.domain.queue.QueueToken.TokenStatus;
 import com.hb.concert.domain.queue.QueueTokenRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,5 +50,10 @@ public class QueueTokenRepositoryImpl implements QueueTokenRepository {
     @Override
     public int countByStatus(TokenStatus status) {
         return queueTokenJpaRepository.countByStatus(status);
+    }
+
+    @Override
+    public QueueToken findByUserIdAndToken(UUID userId, String token) {
+        return queueTokenJpaRepository.findByUserIdAndToken(userId, token);
     }
 }

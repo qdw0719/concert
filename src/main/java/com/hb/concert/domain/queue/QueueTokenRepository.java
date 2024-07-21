@@ -1,6 +1,5 @@
 package com.hb.concert.domain.queue;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,4 +18,6 @@ public interface QueueTokenRepository {
     List<QueueToken> findByStatusOrderByPositionAsc(QueueToken.TokenStatus status);
 
     int countByStatus(QueueToken.TokenStatus status);
+
+    QueueToken findByUserIdAndToken(UUID uuid, String token);
 }

@@ -1,6 +1,7 @@
 package com.hb.concert.presentation.queue;
 
 import com.hb.concert.application.queue.facade.QueueFacade;
+import com.hb.concert.domain.queue.service.QueueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +10,12 @@ import org.springframework.web.bind.annotation.*;
 public class QueueController {
 
     private final QueueFacade queueFacade;
+    private final QueueService queueService;
 
     @Autowired
-    public QueueController(QueueFacade queueFacade) {
+    public QueueController(QueueFacade queueFacade, QueueService queueService) {
         this.queueFacade = queueFacade;
+        this.queueService = queueService;
     }
 
     /**
@@ -34,5 +37,11 @@ public class QueueController {
     @PostMapping("/process")
     public void processCompletedToken(QueueTokenRequest request) {
         queueFacade.processCompletedToken(request.toTokenCompleted());
+    }
+
+    @GetMapping("/waiting-info")
+    public ResponseEntity<QueueTokenResponse> waitingInfoByUser(@RequestBody QueueTokenRequest request) {
+        queueService.waitingInfoByUser(request.toTokenInfoByUser());
+        return null;
     }
 }

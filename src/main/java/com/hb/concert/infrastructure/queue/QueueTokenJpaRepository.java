@@ -23,4 +23,6 @@ public interface QueueTokenJpaRepository extends JpaRepository<QueueToken, Long>
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<QueueToken> findByStatusOrderByPositionAsc(QueueToken.TokenStatus status);
+
+    QueueToken findByUserIdAndToken(UUID userId, String token);
 }

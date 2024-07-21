@@ -229,4 +229,13 @@ public class QueueService {
         tokenInfo.setStatus(TokenStatus.PROCESS);
         saveToken(tokenInfo);
     }
+
+    /**
+     * client에 제공될 유저의 대기열 정보
+     *
+     * @param command
+     */
+    public QueueToken waitingInfoByUser(QueueCommand.TokenInfoByUser command) {
+        return queueTokenRepository.findByUserIdAndToken(command.userId(), command.token());
+    }
 }

@@ -5,4 +5,5 @@ import java.util.UUID;
 public class QueueCommand {
     public record Generate (UUID userId){}
     public record TokenCompleted (UUID userId, String token){}
+    public record TokenInfoByUser (UUID userId, String token){}
 }
