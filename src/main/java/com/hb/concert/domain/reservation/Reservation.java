@@ -50,4 +50,23 @@ public class Reservation {
 
     @Comment("예약 확정 여부") @Enumerated(EnumType.STRING)
     private ValidState validState;
+
+    public static Reservation create(UUID userId, String concertId, String concertDetailId, int durationMinutes) {
+        Reservation reservation = new Reservation();
+        reservation.userId = userId;
+        reservation.concertId = concertId;
+        reservation.concertDetailId = concertDetailId;
+        reservation.reservationTime = LocalDateTime.now();
+        reservation.temporaryGrantTime = reservation.reservationTime.plusMinutes(durationMinutes);
+        reservation.isPaid = UseYn.N;
+        return reservation;
+    }
+
+    public void isPaidRelease() {
+        this.isPaid = UseYn.Y;
+    }
+
+    public void expiredReservation() {
+        this.validState = ValidState.INVALID;
+    }
 }

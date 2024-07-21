@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -77,35 +78,36 @@ public class ConcertService {
     /**
      * 콘서트 좌석예약
      *
-     * @param command
-     * @return
+     * @param concertId
+     * @param concertDetailId
+     * @param concertSeatIdList
+     * @return ConcertSeat
      */
     @Transactional
-    public ConcertSeat saveConcertSeat(ConcertCommand.SaveConcertSeat command) {
-        String lockKey = getLockKey(command.concertId(), command.concertSeatId());
+    public void saveConcertSeat(String concertId, String concertDetailId, List<Integer> concertSeatIdList) {
+        List<ConcertSeat> saveTargetSeat = new ArrayList<>();
 
-        Boolean isLocked = redisTemplate.opsForValue().setIfAbsent(lockKey, "locked", 5, TimeUnit.SECONDS);
-
-        if (Boolean.TRUE.equals(isLocked)) {
-            try {
-                ConcertSeat concertSeat = concertSeatRepository.findByConcertIdAndConcertDetailIdAndConcertSeatId(command.concertId(), command.concertDetailId(), command.concertSeatId());
-
-                if (concertSeat.getUseYn() == UseYn.N) {
-                    throw new CustomException.BadRequestException(CustomException.BadRequestException.ALREADY_RESERVED);
+        concertSeatIdList.stream().map(seatId -> {
+            String lockKey = getLockKey(concertId, seatId);
+            Boolean isLocked = redisTemplate.opsForValue().setIfAbsent(lockKey, "locked", 5, TimeUnit.SECONDS);
+            if (Boolean.TRUE.equals(isLocked)) {
+                try {
+                    ConcertSeat concertSeat = concertSeatRepository.findByConcertIdAndConcertDetailIdAndConcertSeatId(concertId, concertDetailId, seatId);
+                    concertSeat.reserved();
+                    saveTargetSeat.add(concertSeat);
+                } catch (Exception e) {
+                    log.error("Error while saving concert seat: {}", e.getMessage());
+                    throw e;
+                } finally {
+                    redisTemplate.delete(lockKey);
                 }
-
-                concertSeat.setUseYn(UseYn.N);
-                return concertSeatRepository.save(concertSeat);
-            } catch (Exception e) {
-                log.error("Error while saving concert seat: {}", e.getMessage());
-                throw e;
-            } finally {
-                redisTemplate.delete(lockKey);
+            } else {
+                log.warn("Unable to acquire lock for seat: {}", seatId);
+                throw new CustomException.InvalidServerException(CustomException.InvalidServerException.NOT_SELECTED_SEAT);
             }
-        } else {
-            log.warn("Unable to acquire lock for seat: {}", command.concertSeatId());
-            throw new CustomException.InvalidServerException(CustomException.InvalidServerException.NOT_SELECTED_SEAT);
-        }
+            return null;
+        });
+        concertSeatRepository.saveAll(saveTargetSeat);
     }
 
     private String getLockKey(String concertId, Integer concertSeatId) {

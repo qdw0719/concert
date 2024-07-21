@@ -43,4 +43,20 @@ public class QueueToken {
     public enum TokenStatus {
         WAIT, PROCESS, EXPIRED
     }
+
+    public void expiredToken() {
+        this.status = TokenStatus.EXPIRED;
+    }
+
+    public void processedToken() {
+        this.status = TokenStatus.PROCESS;
+    }
+
+    public void activatedToken() {
+        this.isActive = UseYn.Y;
+    }
+
+    public void nonActivatedToken() {
+        this.isActive = UseYn.N;
+    }
 }

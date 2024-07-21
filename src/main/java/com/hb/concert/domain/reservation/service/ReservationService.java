@@ -41,19 +41,9 @@ public class ReservationService {
      */
     @Transactional
     public Reservation createReservation(ReservationCommand.Create command) {
-        Reservation reservation = new Reservation().builder()
-                .reservationId(generateReservationId())
-                .userId(command.userId())
-                .concertId(command.concertId())
-                .concertDetailId(command.concertDetailId())
-                .reservationTime(LocalDateTime.now())
-                .temporaryGrantTime(LocalDateTime.now().plusMinutes(5))
-                .isPaid(UseYn.N)
-                .validState(ValidState.VALID)
-                .build();
-
-        saveReservation(reservation);
-
+        // 도메인 객체를 사용하여 예약 생성
+        Reservation reservation = Reservation.create(command.userId(), command.concertId(), command.concertDetailId(), 5);
+        reservationRepository.save(reservation);
         return reservation;
     }
 

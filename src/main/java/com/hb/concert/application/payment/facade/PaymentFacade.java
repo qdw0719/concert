@@ -1,6 +1,5 @@
 package com.hb.concert.application.payment.facade;
 
-import com.hb.concert.application.concert.command.ConcertCommand;
 import com.hb.concert.application.history.command.HistoryCreateCommand;
 import com.hb.concert.domain.concert.service.ConcertService;
 import com.hb.concert.domain.history.service.HistoryService;
@@ -11,7 +10,6 @@ import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.reservation.service.ReservationService;
 import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.domain.exception.CustomException.BadRequestException;
-import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.history.History;
 import com.hb.concert.domain.payment.Payment;
 import com.hb.concert.domain.reservation.Reservation;
@@ -65,18 +63,12 @@ public class PaymentFacade {
             queueService.expiredQueue(reservationInfo.getUserId());
 
             HistoryCreateCommand.HistoryCreate historyCommand = new HistoryCreateCommand.HistoryCreate(
-                    command.userId(), History.HistoryType.PAYMENT, LocalDateTime.now(), History.HistoryStatus.FAIL, "결제 요청시간 초과"
+                command.userId(), History.HistoryType.PAYMENT, LocalDateTime.now(), History.HistoryStatus.FAIL, "결제 요청시간 초과"
             );
             historyService.saveHistory(historyCommand);
 
             List<Integer> reservedSeatIdList = reservationService.getConcertSeatIdByReservationId(reservationInfo.getReservationId());
-            for (Integer seatId : reservedSeatIdList) {
-                ConcertCommand.SaveConcertSeat seatCommand = new ConcertCommand.SaveConcertSeat(
-                        seatId, reservationInfo.getConcertId(), reservationInfo.getConcertDetailId(), UseYn.Y
-                );
-                concertService.saveConcertSeat(seatCommand);
-            }
-
+            concertService.saveConcertSeat(reservationInfo.getConcertId(), reservationInfo.getConcertDetailId(), reservedSeatIdList);
             throw new CustomException.BadRequestException(BadRequestException.PAYMENT_REQUEST_TIMEOUT);
         }
 
@@ -87,17 +79,17 @@ public class PaymentFacade {
 
         // 예약정보 변경(결제완료)
         Reservation reservation = reservationService.getReservationInfo(reservationInfo.getReservationId());
-        reservation.setIsPaid(UseYn.Y);
+        reservation.isPaidRelease();
         reservationService.saveReservation(reservation);
 
         // 토큰 만료처리
         QueueToken token = queueService.getTokenInfo(command.token());
-        token.setStatus(QueueToken.TokenStatus.EXPIRED);
+        token.expiredToken();
         queueService.saveToken(token);
 
         // 히스토리 적재
         HistoryCreateCommand.HistoryCreate historyCommand = new HistoryCreateCommand.HistoryCreate(
-                payment.getUserId(), History.HistoryType.PAYMENT, payment.getRegTime(), History.HistoryStatus.SUCCESS, null
+            payment.getUserId(), History.HistoryType.PAYMENT, payment.getRegTime(), History.HistoryStatus.SUCCESS, null
         );
         historyService.saveHistory(historyCommand);
 

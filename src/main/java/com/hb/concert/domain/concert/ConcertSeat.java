@@ -1,6 +1,7 @@
 package com.hb.concert.domain.concert;
 
 import com.hb.concert.domain.common.enumerate.UseYn;
+import com.hb.concert.domain.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +32,15 @@ public class ConcertSeat {
 
     @Comment("좌석 예약 가능 여부") @Enumerated(EnumType.STRING)
     private UseYn useYn;
+
+    public void reserved() {
+        if (this.useYn == UseYn.N) {
+            throw new CustomException.BadRequestException(CustomException.BadRequestException.ALREADY_RESERVED);
+        }
+        this.useYn = UseYn.N;
+    }
+
+    public void release() {
+        this.useYn = UseYn.Y;
+    }
 }

@@ -49,12 +49,7 @@ public class ReservationFacade {
         historyService.saveHistory(historyCommand);
 
         List<Integer> concertSeatIdList = command.seatIdList();
-        for (Integer seatId : concertSeatIdList) {
-            ConcertCommand.SaveConcertSeat seatCommand = new ConcertCommand.SaveConcertSeat(
-                    seatId, reservation.getConcertId(), reservation.getConcertDetailId(), UseYn.N
-            );
-            concertService.saveConcertSeat(seatCommand);
-        }
+        concertService.saveConcertSeat(command.concertId(), command.concertDetailId(), concertSeatIdList);
 
         ReservationDetailCommand.CreateReservationDetail detailCommand = new ReservationDetailCommand.CreateReservationDetail(reservation.getReservationId(), concertSeatIdList);
         reservationService.createReservationDetails(detailCommand, concertSeatIdList);
@@ -88,14 +83,9 @@ public class ReservationFacade {
             historyService.saveHistory(historyCommand);
 
             List<Integer> reservedSeatIdList = reservationService.getConcertSeatIdByReservationId(reservation.getReservationId());
-            for (Integer seatId : reservedSeatIdList) {
-                ConcertCommand.SaveConcertSeat seatCommand = new ConcertCommand.SaveConcertSeat(
-                        seatId, reservation.getConcertId(), reservation.getConcertDetailId(), UseYn.Y
-                );
-                concertService.saveConcertSeat(seatCommand);
-            }
+            concertService.saveConcertSeat(reservation.getConcertId(), reservation.getConcertDetailId(), reservedSeatIdList);
 
-            reservation.setValidState(ValidState.INVALID);
+            reservation.expiredReservation();
             reservationService.saveReservation(reservation);
         }
     }
