@@ -43,10 +43,10 @@ public class UserService {
                 user.setBalance(user.getBalance() + command.amount());
                 userRepository.save(user);
             } catch (Exception e) {
-                log.error("Error while charging balance: {}", e.getMessage());
+                log.info("Error while charging balance: {}", e.getMessage());
                 throw e;
             } finally {
-                log.warn("Unable to acquire lock for user balance: {}", command.userId());
+                log.info("Unable to acquire lock for user balance: {}", command.userId());
                 releaseLock(lockKey);
             }
         } else {
@@ -78,7 +78,7 @@ public class UserService {
                 user.setBalance(user.getBalance() - amount);
                 userRepository.save(user);
             } catch (Exception e) {
-                log.error("Error while deducting balance: {}", e.getMessage());
+                log.info("Error while deducting balance: {}", e.getMessage());
                 throw e;
             } finally {
                 releaseLock(lockKey);

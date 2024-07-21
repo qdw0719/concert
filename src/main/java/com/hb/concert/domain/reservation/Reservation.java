@@ -52,14 +52,14 @@ public class Reservation {
     private ValidState validState;
 
     public static Reservation create(UUID userId, String concertId, String concertDetailId, int durationMinutes) {
-        Reservation reservation = new Reservation();
-        reservation.userId = userId;
-        reservation.concertId = concertId;
-        reservation.concertDetailId = concertDetailId;
-        reservation.reservationTime = LocalDateTime.now();
-        reservation.temporaryGrantTime = reservation.reservationTime.plusMinutes(durationMinutes);
-        reservation.isPaid = UseYn.N;
-        return reservation;
+        return new Reservation().builder()
+                .userId(userId)
+                .concertId(concertId)
+                .concertDetailId(concertDetailId)
+                .reservationTime(LocalDateTime.now())
+                .temporaryGrantTime(LocalDateTime.now().plusMinutes(durationMinutes))
+                .isPaid(UseYn.Y)
+                .build();
     }
 
     public void isPaidRelease() {

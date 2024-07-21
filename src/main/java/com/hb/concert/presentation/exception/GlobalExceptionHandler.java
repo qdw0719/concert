@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
                 ex.getClassName()
         );
 
-        log.error("Exception occurred - Class: {}, Method: {}, Message: {}, Path: {}, Parameters: {}, UserAgent: {}",
+        log.info("Exception occurred - Class: {}, Method: {}, Message: {}, Path: {}, Parameters: {}, UserAgent: {}",
                 ex.getClassName(), ex.getMethod(), ex.getReason(), request.getContextPath(), request.getParameterMap(), request.getHeader("User-Agent"));
 
         return new ResponseEntity<>(errorInfo, ex.getStatusCode());
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
                 null
         );
 
-        log.error("Exception occurred - Message: {}, Path: {}, Parameters: {}, UserAgent: {}",
+        log.info("Exception occurred - Message: {}, Path: {}, Parameters: {}, UserAgent: {}",
                 ex.getMessage(), request.getContextPath(), request.getParameterMap(), request.getHeader("User-Agent"));
 
         return new ResponseEntity<>(errorInfo, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,6 +1,6 @@
 package com.hb.concert.support.config.interceptor;
 
-import com.hb.concert.domain.exception.CustomException;
+import com.hb.concert.domain.exception.CustomException.BadRequestException;
 import com.hb.concert.support.config.util.JwtUtil;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.queue.QueueToken;
@@ -45,20 +45,20 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
                 log.info("Request user ID : {}", userId);
                 jwtUtil.validateToken(tokenStr);
             } catch (JwtException je) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, BadRequestException.TOKEN_UNAUTHORIZED);
                 log.error("Token validation check, JwtException >> {}", je.getMessage());
                 return false;
             }
 
             QueueToken queueToken = queueTokenRepository.findByToken(tokenStr);
             if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
-                log.error("Token status check, status : {}", queueToken.getStatus());
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, BadRequestException.TOKEN_UNAUTHORIZED);
+                log.info("Token status check, status : {}", queueToken.getStatus());
                 return false;
             }
             if (queueToken.getIsActive().equals(UseYn.N)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, CustomException.BadRequestException.TOKEN_UNAUTHORIZED);
-                log.error("Token IsActive check, isActive : {}", queueToken.getIsActive());
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, BadRequestException.TOKEN_UNAUTHORIZED);
+                log.info("Token IsActive check, isActive : {}", queueToken.getIsActive());
                 return false;
             }
 

@@ -33,7 +33,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         if (ex != null) {
-            log.error("Request raised exception: " + ex.getMessage());
+            log.info("Request raised exception: " + ex.getMessage());
         }
         log.info("Request completed");
     }

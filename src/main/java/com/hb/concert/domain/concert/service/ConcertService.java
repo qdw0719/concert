@@ -96,7 +96,7 @@ public class ConcertService {
                     concertSeat.reserved();
                     saveTargetSeat.add(concertSeat);
                 } catch (Exception e) {
-                    log.error("Error while saving concert seat: {}", e.getMessage());
+                    log.info("Error while saving concert seat: {}", e.getMessage());
                     throw e;
                 } finally {
                     redisTemplate.delete(lockKey);
