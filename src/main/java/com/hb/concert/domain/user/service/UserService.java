@@ -47,7 +47,7 @@ public class UserService {
                 throw e;
             } finally {
                 log.warn("Unable to acquire lock for user balance: {}", command.userId());
-                redisTemplate.delete(lockKey);
+                releaseLock(lockKey);
             }
         } else {
             throw new CustomException.BadRequestException("현재 잔액을 충전할 수 없습니다. 다시 시도해 주세요.");
@@ -81,12 +81,16 @@ public class UserService {
                 log.error("Error while deducting balance: {}", e.getMessage());
                 throw e;
             } finally {
-                redisTemplate.delete(lockKey);
+                releaseLock(lockKey);
             }
         } else {
             log.warn("Unable to acquire lock for user balance: {}", userId);
             throw new CustomException.InvalidServerException(CustomException.InvalidServerException.NOT_DEDUCT_BALANCE);
         }
+    }
+
+    private void releaseLock(String lockKey) {
+        redisTemplate.delete(lockKey);
     }
 
     @Transactional

@@ -4,6 +4,7 @@ import com.hb.concert.domain.common.enumerate.UseYn;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReservationRepository {
@@ -13,7 +14,7 @@ public interface ReservationRepository {
 
     int countByReservationId(String sreservationId);
 
-    Reservation findTopByOrderByIdDesc();
+    Optional<Reservation> findTopByOrderByIdDesc();
 
     List<Reservation> findByIsPaidAndReservationTimeBefore(UseYn useYn, LocalDateTime localDateTime);
 

@@ -61,10 +61,7 @@ public class ConcertFacade {
      * @param detailId
      */
     public void validationConcert(String concertId, String detailId) {
-        if (concertService.isConcertCountNotFound(concertId)) {
-            throw new CustomException.NotFoundException(CustomException.NotFoundException.CONCERT_NOT_FOUND);
-        }
-        if (detailId != null && concertService.isConcertDetailCountNotFound(concertId, detailId)) {
+        if (concertService.isConcertCountNotFound(concertId) || (detailId != null && concertService.isConcertDetailCountNotFound(concertId, detailId))) {
             throw new CustomException.NotFoundException(CustomException.NotFoundException.CONCERT_NOT_FOUND);
         }
     }

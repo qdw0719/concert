@@ -1,6 +1,7 @@
 package com.hb.concert.support.config.util;
 
 
+import com.hb.concert.domain.exception.CustomException.BadRequestException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,10 +38,15 @@ public class JwtUtil {
     }
 
     public Map<String, Object> validateToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            throw new BadRequestException(BadRequestException.TOKEN_UNAUTHORIZED);
+        }
+
     }
 
     public UUID getUserIdFromToken(String token) {

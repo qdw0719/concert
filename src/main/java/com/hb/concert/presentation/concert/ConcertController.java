@@ -1,16 +1,13 @@
 package com.hb.concert.presentation.concert;
 
-//import com.hb.concert.annotation.TokenValidation;
 import com.hb.concert.application.concert.facade.ConcertFacade;
 import com.hb.concert.domain.common.enumerate.UseYn;
-import com.hb.concert.domain.concert.Concert;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController @RequestMapping("/api/concerts")
@@ -28,7 +25,7 @@ public class ConcertController {
      * @return 모든 콘서트 목록
      */
     @GetMapping
-    public ResponseEntity<List<ConcertResponse>> getConcerts() {
+    public ResponseEntity<List<ConcertResponse>> getAvailableConcerts() {
         List<ConcertResponse> response = concertFacade.getAvailableConcerts()
                 .stream()
                 .map(ConcertResponse::of)

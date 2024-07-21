@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class ConcertService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-
     private final ConcertRepository concertRepository;
     private final ConcertDetailRepository concertDetailRepository;
     private final ConcertSeatRepository concertSeatRepository;
@@ -83,12 +82,7 @@ public class ConcertService {
      */
     @Transactional
     public ConcertSeat saveConcertSeat(ConcertCommand.SaveConcertSeat command) {
-        String lockKey = new StringBuilder()
-                .append("ConcertSeatLock:")
-                .append(command.concertId())
-                .append(":")
-                .append(command.concertSeatId())
-                .toString();
+        String lockKey = getLockKey(command.concertId(), command.concertSeatId());
 
         Boolean isLocked = redisTemplate.opsForValue().setIfAbsent(lockKey, "locked", 5, TimeUnit.SECONDS);
 
@@ -112,6 +106,15 @@ public class ConcertService {
             log.warn("Unable to acquire lock for seat: {}", command.concertSeatId());
             throw new CustomException.InvalidServerException(CustomException.InvalidServerException.NOT_SELECTED_SEAT);
         }
+    }
+
+    private String getLockKey(String concertId, Integer concertSeatId) {
+        return new StringBuilder()
+                .append("ConcertSeatLock:")
+                .append(concertId)
+                .append(":")
+                .append(concertSeatId)
+                .toString();
     }
 
     /**

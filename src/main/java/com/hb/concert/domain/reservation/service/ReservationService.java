@@ -65,11 +65,9 @@ public class ReservationService {
      * */
     private String generateReservationId() {
         String reservationIdStartStr = "reservation_";
-        String lastReservationId = reservationRepository.findTopByOrderByIdDesc().getReservationId();
-
-        if (CommonUtil.isNull(lastReservationId)) {
-            lastReservationId = padRightZeros(reservationIdStartStr, 4); //뭐.. 사이에 concertId 넣을까 말까,,,
-        }
+        String lastReservationId = reservationRepository.findTopByOrderByIdDesc()
+                .map(Reservation::getReservationId)
+                .orElse(padRightZeros(reservationIdStartStr, 4));
 
         String newReservationId = reservationIdStartStr + padLeftZeros(lastReservationId.split("_")[1] + 1, 4);
         return newReservationId;

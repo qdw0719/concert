@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReservationJpaRepository extends JpaRepository<Reservation, Long> {
@@ -14,7 +15,7 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, Lon
 
     int countByReservationId(String reservationId);
 
-    Reservation findTopByOrderByIdDesc();
+    Optional<Reservation> findTopByOrderByIdDesc();
 
     List<Reservation> findByIsPaidAndReservationTimeBefore(UseYn useYn, LocalDateTime localDateTime);
 
