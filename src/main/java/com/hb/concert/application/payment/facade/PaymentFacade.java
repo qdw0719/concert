@@ -15,7 +15,6 @@ import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.history.History;
 import com.hb.concert.domain.payment.Payment;
 import com.hb.concert.domain.reservation.Reservation;
-import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

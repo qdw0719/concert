@@ -23,6 +23,8 @@ public class PaymentController {
      */
     @PostMapping("/create") //@TokenValidation
     public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest requestBody) {
-        return ResponseEntity.ok(PaymentResponse.of(paymentFacade.createPayment(requestBody.toCommand())));
+        return ResponseEntity.ok(
+                PaymentResponse.of(paymentFacade.createPayment(requestBody.toCommand()))
+        );
     }
 }

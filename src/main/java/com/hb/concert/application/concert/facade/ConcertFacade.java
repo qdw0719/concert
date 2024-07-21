@@ -4,12 +4,10 @@ import com.hb.concert.application.concert.command.ConcertCommand;
 import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.domain.concert.service.ConcertService;
 import com.hb.concert.domain.queue.service.QueueService;
-import com.hb.concert.domain.concert.Concert;
 import com.hb.concert.domain.concert.ConcertDetail;
 import com.hb.concert.domain.concert.ConcertSeat;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,15 +18,6 @@ public class ConcertFacade {
     public ConcertFacade(ConcertService concertService, QueueService queueService) {
         this.concertService = concertService;
         this.queueService = queueService;
-    }
-
-    /**
-     * 예약 가능한 콘서트 목록을 조회하는 메소드
-     *
-     * @return 예약 가능한 콘서트 목록
-     */
-    public List<Concert> getAvailableConcerts() {
-        return concertService.getAvailableConcerts(LocalDate.now());
     }
 
     /**

@@ -27,23 +27,6 @@ public class QueueFacade {
     }
 
     /**
-     * 대기열 토큰을 생성
-     * @param command 토큰 생성 요청 정보
-     * @return 생성된 토큰 정보
-     */
-    public QueueToken generateToken(QueueCommand.Generate command) {
-        return queueService.generateToken(command);
-    }
-
-    /**
-     * 대기열에서 다음 토큰을 처리
-     * @return 처리된 토큰 정보
-     */
-    public void processCompletedToken(QueueCommand.TokenCompleted command) {
-        queueService.processCompletedToken(command);
-    }
-
-    /**
      * 예약 후 또는 토큰 발급 후 아무 작업도 하지 않는 대상 만료처리
      */
     public void compulsoryExpiredTokens() {

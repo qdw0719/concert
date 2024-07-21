@@ -26,7 +26,7 @@ public class QueueController {
     @PostMapping("/token")
     public ResponseEntity<QueueTokenResponse> generateToken(@RequestBody QueueTokenRequest request) {
         return ResponseEntity.ok(
-                QueueTokenResponse.of(queueFacade.generateToken(request.toGenerateCommand()))
+                QueueTokenResponse.of(queueService.generateToken(request.toGenerateCommand()))
         );
     }
 
@@ -36,12 +36,14 @@ public class QueueController {
      */
     @PostMapping("/process")
     public void processCompletedToken(QueueTokenRequest request) {
-        queueFacade.processCompletedToken(request.toTokenCompleted());
+        queueService.processCompletedToken(request.toTokenCompleted());
     }
 
     @GetMapping("/waiting-info")
     public ResponseEntity<QueueTokenResponse> waitingInfoByUser(@RequestBody QueueTokenRequest request) {
-        queueService.waitingInfoByUser(request.toTokenInfoByUser());
-        return null;
+
+        return ResponseEntity.ok(
+            QueueTokenResponse.of(queueService.waitingInfoByUser(request.toTokenInfoByUser()))
+        );
     }
 }

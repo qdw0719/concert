@@ -2,10 +2,12 @@ package com.hb.concert.presentation.concert;
 
 import com.hb.concert.application.concert.facade.ConcertFacade;
 import com.hb.concert.domain.common.enumerate.UseYn;
+import com.hb.concert.domain.concert.service.ConcertService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,9 +16,11 @@ import java.util.stream.Collectors;
 public class ConcertController {
 
     private final ConcertFacade concertFacade;
+    private final ConcertService concertService;
 
-    public ConcertController(ConcertFacade concertFacade) {
+    public ConcertController(ConcertFacade concertFacade, ConcertService concertService) {
         this.concertFacade = concertFacade;
+        this.concertService = concertService;
     }
 
     /**
@@ -26,7 +30,7 @@ public class ConcertController {
      */
     @GetMapping
     public ResponseEntity<List<ConcertResponse>> getAvailableConcerts() {
-        List<ConcertResponse> response = concertFacade.getAvailableConcerts()
+        List<ConcertResponse> response = concertService.getAvailableConcerts(LocalDate.now())
                 .stream()
                 .map(ConcertResponse::of)
                 .collect(Collectors.toList());
