@@ -1,6 +1,5 @@
 package com.hb.concert.application.reservation.facade;
 
-import com.hb.concert.application.concert.command.ConcertCommand;
 import com.hb.concert.application.reservation.command.ReservationCommand;
 import com.hb.concert.application.reservation.command.ReservationDetailCommand;
 import com.hb.concert.domain.concert.service.ConcertService;
@@ -9,7 +8,6 @@ import com.hb.concert.application.history.command.HistoryCreateCommand;
 import com.hb.concert.domain.history.service.HistoryService;
 import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.common.enumerate.UseYn;
-import com.hb.concert.domain.common.enumerate.ValidState;
 import com.hb.concert.domain.history.History;
 import com.hb.concert.domain.reservation.Reservation;
 import org.springframework.stereotype.Service;
@@ -67,8 +65,7 @@ public class ReservationFacade {
 
     /**
      * 스케줄 돌면서 토큰 만료처리 및 대기중인 인원 순번 -1
-     *
-     * @description 1분 schedule
+     * 1분 schedule
      */
     @Transactional
     public void expiredReservations() {

@@ -51,14 +51,15 @@ public class Reservation {
     @Comment("예약 확정 여부") @Enumerated(EnumType.STRING)
     private ValidState validState;
 
-    public static Reservation create(UUID userId, String concertId, String concertDetailId, int durationMinutes) {
+    public static Reservation create(String reservationId, UUID userId, String concertId, String concertDetailId, int durationMinutes) {
         return new Reservation().builder()
+                .reservationId(reservationId)
                 .userId(userId)
                 .concertId(concertId)
                 .concertDetailId(concertDetailId)
                 .reservationTime(LocalDateTime.now())
                 .temporaryGrantTime(LocalDateTime.now().plusMinutes(durationMinutes))
-                .isPaid(UseYn.Y)
+                .isPaid(UseYn.N)
                 .build();
     }
 

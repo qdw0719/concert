@@ -1,6 +1,5 @@
 package com.hb.concert.application.queue.facade;
 
-import com.hb.concert.application.queue.command.QueueCommand;
 import com.hb.concert.support.config.util.JwtUtil;
 import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.queue.QueueToken;
@@ -37,7 +36,7 @@ public class QueueFacade {
             UUID userId = jwtUtil.getUserIdFromToken(token.getToken());
             Reservation reservationInfo = reservationService.getReservationInfoByUserToday(userId);
 
-            List<UUID> expiredUserReservationInfo = reservationService.findUserNotReservationToday();
+            List<UUID> expiredUserReservationInfo = reservationService.findUserReservationToday();
 
             if (reservationInfo != null || !expiredUserReservationInfo.contains(token.getUserId())) {
                 isExpired = true;

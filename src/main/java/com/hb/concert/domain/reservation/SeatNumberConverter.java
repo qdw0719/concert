@@ -18,7 +18,7 @@ public class SeatNumberConverter implements AttributeConverter<List<Integer>, St
         try {
             return mapper.writeValueAsString(attribute);
         } catch (IOException ioe) {
-            throw new IllegalArgumentException("Error List to JSON", ioe);
+            throw new IllegalArgumentException("Error Seat List to JSON", ioe);
         }
     }
 
@@ -27,7 +27,7 @@ public class SeatNumberConverter implements AttributeConverter<List<Integer>, St
         try {
             return mapper.readValue(dbData, new TypeReference<List<Integer>>(){});
         } catch (IOException ioe) {
-            throw new IllegalArgumentException("Error JSON to List", ioe);
+            throw new IllegalArgumentException("Error JSON to Seat List", ioe);
         }
     }
 }

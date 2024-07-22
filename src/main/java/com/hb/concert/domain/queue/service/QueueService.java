@@ -219,7 +219,6 @@ public class QueueService {
 
         // 대기열 순번이 0인지 체크
         if (!isQueuePositionZero(token)) {
-//            QueueToken queueToken = getUserToken(userId);
             int position = tokenInfo.getPosition();
             int waitTime = tokenInfo.getWaitTime();
             throw new CustomException.QueueException(CustomException.QueueException.TOKEN_NOT_POSITION_ZERO + String.format(" 현재 대기순번: %d, 남은 대기시간: %d ", position, waitTime));

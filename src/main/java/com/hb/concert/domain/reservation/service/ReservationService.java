@@ -2,9 +2,7 @@ package com.hb.concert.domain.reservation.service;
 
 import com.hb.concert.application.reservation.command.ReservationCommand;
 import com.hb.concert.application.reservation.command.ReservationDetailCommand;
-import com.hb.concert.support.CommonUtil;
 import com.hb.concert.domain.common.enumerate.UseYn;
-import com.hb.concert.domain.common.enumerate.ValidState;
 import com.hb.concert.domain.reservation.Reservation;
 import com.hb.concert.domain.reservation.ReservationDetail;
 import com.hb.concert.domain.reservation.ReservationDetailRepository;
@@ -42,8 +40,8 @@ public class ReservationService {
     @Transactional
     public Reservation createReservation(ReservationCommand.Create command) {
         // 도메인 객체를 사용하여 예약 생성
-        Reservation reservation = Reservation.create(command.userId(), command.concertId(), command.concertDetailId(), 5);
-        reservationRepository.save(reservation);
+        Reservation reservation = Reservation.create(generateReservationId(), command.userId(), command.concertId(), command.concertDetailId(), 5);
+        saveReservation(reservation);
         return reservation;
     }
 
@@ -118,10 +116,9 @@ public class ReservationService {
      * 오늘 날짜에 예약한 유저 조회
      * @return List<UUID>
      */
-    public List<UUID> findUserNotReservationToday() {
-        LocalDate today = LocalDate.now();
-        LocalDateTime startTime = today.atStartOfDay();
-        LocalDateTime endTime = today.atTime(LocalTime.MAX);
+    public List<UUID> findUserReservationToday() {
+        LocalDateTime startTime = LocalDate.now().atStartOfDay();
+        LocalDateTime endTime = LocalDate.now().atTime(LocalTime.MAX);
         return reservationRepository.findUserNotReservationToday(startTime, endTime);
     }
 
