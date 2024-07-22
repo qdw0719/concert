@@ -2,8 +2,6 @@ package com.hb.concert.domain.user.service;
 
 import com.hb.concert.application.user.command.UserCommand;
 import com.hb.concert.domain.exception.CustomException;
-import com.hb.concert.domain.exception.CustomException.NotFoundException;
-
 import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +88,10 @@ public class UserService {
     }
 
     private void releaseLock(String lockKey) {
-        redisTemplate.delete(lockKey);
+        boolean released = redisTemplate.delete(lockKey);
+        if (!released) {
+            log.warn("Failed to release lock for key: {}", lockKey);
+        }
     }
 
     @Transactional

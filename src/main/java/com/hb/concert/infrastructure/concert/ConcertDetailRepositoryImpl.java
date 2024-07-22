@@ -1,6 +1,5 @@
 package com.hb.concert.infrastructure.concert;
 
-import com.hb.concert.domain.concert.Concert;
 import com.hb.concert.domain.concert.ConcertDetail;
 import com.hb.concert.domain.concert.ConcertDetailRepository;
 import com.hb.concert.domain.common.enumerate.ValidState;

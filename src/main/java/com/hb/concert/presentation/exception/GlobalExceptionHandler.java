@@ -29,7 +29,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorInfo, ex.getStatusCode());
     }
 
-    // Generic Exception Handler for other types of exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorInfo> handleGlobalException(Exception ex, WebRequest request) {
         ErrorInfo errorInfo = new ErrorInfo(

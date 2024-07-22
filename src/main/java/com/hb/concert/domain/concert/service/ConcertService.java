@@ -1,7 +1,6 @@
 package com.hb.concert.domain.concert.service;
 
 import com.hb.concert.application.concert.command.ConcertCommand;
-import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.common.enumerate.ValidState;
 import com.hb.concert.domain.concert.*;
 import com.hb.concert.domain.exception.CustomException;
@@ -99,7 +98,7 @@ public class ConcertService {
                     log.info("Error while saving concert seat: {}", e.getMessage());
                     throw e;
                 } finally {
-                    redisTemplate.delete(lockKey);
+                    releaseLock(lockKey);
                 }
             } else {
                 log.warn("Unable to acquire lock for seat: {}", seatId);
@@ -117,6 +116,13 @@ public class ConcertService {
                 .append(":")
                 .append(concertSeatId)
                 .toString();
+    }
+
+    private void releaseLock(String lockKey) {
+        boolean released = redisTemplate.delete(lockKey);
+        if (!released) {
+            log.warn("Failed to release lock for key: {}", lockKey);
+        }
     }
 
     /**

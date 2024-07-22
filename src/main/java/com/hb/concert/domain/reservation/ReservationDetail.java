@@ -22,7 +22,7 @@ public class ReservationDetail {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Comment("예약번호") @Column(nullable = false, unique = true)
+    @Comment("예약번호") @Column(nullable = false)
     private String reservationId;
 
     @Comment("예약 좌석 번호")

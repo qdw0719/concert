@@ -57,6 +57,7 @@ public class PaymentFacade {
 
         Reservation reservationInfo = reservationService.getReservationInfoByUser(command.userId());
 
+        // 임시 예약 시간이 지난 경우 처리
         if (reservationInfo.getReservationTime().isBefore(reservationInfo.getTemporaryGrantTime())) {
             log.warn("Payment request timeout for user: {}", command.userId());
 

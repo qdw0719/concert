@@ -8,7 +8,8 @@ import lombok.Setter;
 
 import java.util.Map;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class ErrorInfo {
     private String message;
     private String details;

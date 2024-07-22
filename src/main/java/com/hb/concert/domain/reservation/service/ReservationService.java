@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.hb.concert.support.CommonUtil.padLeftZeros;
@@ -53,11 +54,15 @@ public class ReservationService {
      * */
     private String generateReservationId() {
         String reservationIdStartStr = "reservation_";
-        String lastReservationId = reservationRepository.findTopByOrderByIdDesc()
-                .map(Reservation::getReservationId)
-                .orElse(padRightZeros(reservationIdStartStr, 4));
+        String newReservationId;
 
-        String newReservationId = reservationIdStartStr + padLeftZeros(lastReservationId.split("_")[1] + 1, 4);
+        Optional<Reservation> getLastReservation = reservationRepository.findTopByOrderByIdDesc();
+        if (getLastReservation.isPresent()) {
+            String lastReservationId = getLastReservation.map(Reservation::getReservationId).get();
+            newReservationId = reservationIdStartStr + padLeftZeros(lastReservationId.split("_")[1] + 1, 4);
+        } else {
+            newReservationId = "reservation_0001";
+        }
         return newReservationId;
     }
 

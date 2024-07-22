@@ -60,6 +60,7 @@ public class Reservation {
                 .reservationTime(LocalDateTime.now())
                 .temporaryGrantTime(LocalDateTime.now().plusMinutes(durationMinutes))
                 .isPaid(UseYn.N)
+                .validState(ValidState.INVALID)
                 .build();
     }
 

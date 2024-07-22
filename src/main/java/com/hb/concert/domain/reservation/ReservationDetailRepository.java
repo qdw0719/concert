@@ -9,4 +9,6 @@ public interface ReservationDetailRepository {
     List<ReservationDetail> saveAll(List<ReservationDetail> reservationDetailList);
 
     List<Integer> findConcertSeatIdByReservationId(String reservationId);
+
+    List<ReservationDetail> findByReservationId(String reservationId);
 }

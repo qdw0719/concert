@@ -10,4 +10,6 @@ public interface ReservationDetailJpaRepository extends JpaRepository<Reservatio
 
     @Query("select rd.concertSeatId from ReservationDetail rd where rd.reservationId = :reservationId")
     List<Integer> findConcertSeatIdByReservationId(String reservationId);
+
+    List<ReservationDetail> findByReservationId(String reservationId);
 }

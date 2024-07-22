@@ -4,6 +4,9 @@ import com.hb.concert.domain.history.History;
 import com.hb.concert.domain.history.HistoryRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.UUID;
+
 @Repository
 public class HistoryRepositoryImpl implements HistoryRepository {
 
@@ -16,5 +19,10 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     @Override
     public void save(History history) {
         historyJpaRepository.save(history);
+    }
+
+    @Override
+    public List<History> findByUserId(UUID userId) {
+        return historyJpaRepository.findByUserId(userId);
     }
 }

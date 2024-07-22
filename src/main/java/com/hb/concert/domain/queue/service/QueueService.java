@@ -37,11 +37,14 @@ public class QueueService {
         String token;
         UUID userId = command.userId();
 
+        // 현재 서비스 진행중인 토큰 목록 조회
         List<QueueToken> processedTokenList = queueTokenRepository.findByStatus(TokenStatus.PROCESS);
+        // 대기 중인 토큰 목록 조회
         List<QueueToken> waitTokenList = queueTokenRepository.findByStatus(TokenStatus.WAIT);
 
         QueueToken resultQueueToken = new QueueToken();
         if (processedTokenList.size() < MAX_QUEUE_SIZE) {
+            // 서비스 이용중인 인원이 최대 인원보다 적으면 즉시 서비스 이용가능한 토큰 생성
             token = jwtUtil.generateToken(userId, 0, 0);
             QueueToken queueToken = QueueToken.builder()
                     .token(token)
@@ -53,6 +56,7 @@ public class QueueService {
                     .build();
             resultQueueToken = queueTokenRepository.save(queueToken);
         } else {
+            // 서비스 이용중인 인원이 최대인원일 경우 대기열에 진입, 대기번호 및 대기순번 부여
             int position = waitTokenList.size() +1;
             int waitTime = calculateWaitTime(position);
 
