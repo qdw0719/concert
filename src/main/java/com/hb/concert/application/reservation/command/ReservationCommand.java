@@ -22,4 +22,12 @@ public class ReservationCommand {
             String seatId,
             UseYn isPaid
     ) {}
+
+    public record GetReservationInfo(
+            String reservationId,
+            UUID userId,
+            String concertId,
+            String concertDetailId,
+            List<Integer> seatId
+    ) {}
 }

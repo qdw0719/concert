@@ -7,6 +7,7 @@ import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.domain.queue.QueueToken;
 import com.hb.concert.domain.queue.QueueToken.TokenStatus;
 import com.hb.concert.domain.queue.QueueTokenRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +21,17 @@ public class QueueService {
 
     private final QueueTokenRepository queueTokenRepository;
     private final JwtUtil jwtUtil;
+//    private final RedisTemplate<String, Object> redisTemplate;
 
-    public QueueService(QueueTokenRepository queueTokenRepository, JwtUtil jwtUtil) {
+    public QueueService(
+            QueueTokenRepository queueTokenRepository,
+            JwtUtil jwtUtil
+//            , RedisTemplate<String, Object> redisTemplate
+
+    ) {
         this.queueTokenRepository = queueTokenRepository;
         this.jwtUtil = jwtUtil;
+//        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -75,6 +83,103 @@ public class QueueService {
         return resultQueueToken;
     }
 
+//    redis 사용버전
+//    @Transactional
+//    public QueueToken generateToken(QueueCommand.Generate command) {
+//        String token;
+//        UUID userId = command.userId();
+//
+//        String lockKey = "queueLock:" + userId;
+//        Boolean isLocked = redisTemplate.opsForValue().setIfAbsent(lockKey, "locked", 5, TimeUnit.SECONDS);
+//
+//        if (Boolean.TRUE.equals(isLocked)) {
+//            try {
+//                List<QueueToken> processedTokenList = queueTokenRepository.findByStatus(TokenStatus.PROCESS);
+//                List<QueueToken> waitTokenList = queueTokenRepository.findByStatus(TokenStatus.WAIT);
+//
+//                QueueToken resultQueueToken = new QueueToken();
+//                if (processedTokenList.size() < MAX_QUEUE_SIZE) {
+//                    token = jwtUtil.generateToken(userId, 0, 0);
+//                    QueueToken queueToken = QueueToken.builder()
+//                            .token(token)
+//                            .userId(userId)
+//                            .position(0)
+//                            .waitTime(0)
+//                            .isActive(UseYn.Y)
+//                            .status(TokenStatus.PROCESS)
+//                            .build();
+//                    resultQueueToken = queueTokenRepository.save(queueToken);
+//                } else {
+//                    int position = waitTokenList.size() + 1;
+//                    int waitTime = calculateWaitTime(position);
+//
+//                    token = jwtUtil.generateToken(userId, position, waitTime);
+//
+//                    QueueToken queueToken = QueueToken.builder()
+//                            .token(token)
+//                            .userId(userId)
+//                            .position(position)
+//                            .waitTime(waitTime)
+//                            .isActive(UseYn.N)
+//                            .status(TokenStatus.WAIT)
+//                            .build();
+//                    resultQueueToken = queueTokenRepository.save(queueToken);
+//                }
+//                return resultQueueToken;
+//            } finally {
+//                releaseLock(lockKey);
+//            }
+//        } else {
+//            throw new CustomException.InvalidServerException("현재 대기열에 진입할 수 없습니다. 다시 시도해 주세요.");
+//        }
+//    }`
+//
+//    @Transactional
+//    public void processCompletedToken(QueueCommand.TokenCompleted command) {
+//        String lockKey = "queueLock:" + command.userId();
+//        Boolean isLocked = redisTemplate.opsForValue().setIfAbsent(lockKey, "locked", 5, TimeUnit.SECONDS);
+//
+//        if (Boolean.TRUE.equals(isLocked)) {
+//            try {
+//                List<QueueToken> tokenList = queueTokenRepository.findByStatus(TokenStatus.PROCESS);
+//                Optional<QueueToken> queueToken = tokenList.stream()
+//                        .filter(token ->
+//                                token.getUserId().equals(command.userId())
+//                                        && token.getToken().equals(command.token())
+//                                        && token.getStatus().equals(TokenStatus.PROCESS)
+//                        )
+//                        .findFirst();
+//
+//                if (queueToken.isPresent()) {
+//                    QueueToken token = queueToken.get();
+//                    token.setStatus(TokenStatus.EXPIRED);
+//                    token.setIsActive(UseYn.N);
+//                    saveToken(token);
+//
+//                    positionDecreaseWaitingToken();
+//                }
+//            } finally {
+//                releaseLock(lockKey);
+//            }
+//        } else {
+//            throw new CustomException.InvalidServerException("현재 토큰을 처리할 수 없습니다. 다시 시도해 주세요.");
+//        }
+//    }
+//
+//    private void releaseLock(String lockKey) {
+//        boolean released = redisTemplate.delete(lockKey);
+//        if (!released) {
+//            log.warn("Failed to release lock for key: {}", lockKey);
+//        }
+//    }
+//
+//    private void releaseLock(String lockKey) {
+//        boolean released = redisTemplate.delete(lockKey);
+//        if (!released) {
+//            log.warn("Failed to release lock for key: {}", lockKey);
+//        }
+//    }
+
     /**
      * 결제가 완료된 토큰을 처리하고 대기 중인 토큰들의 순서를 갱신하는 메서드
      *
@@ -93,7 +198,6 @@ public class QueueService {
 
         if (queueToken.isPresent()) {
             QueueToken token = queueToken.get();
-            System.out.println(token);
             token.setStatus(TokenStatus.EXPIRED);
             token.setIsActive(UseYn.N);
             saveToken(token);

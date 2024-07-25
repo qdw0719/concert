@@ -8,6 +8,7 @@ import com.hb.concert.domain.reservation.ReservationDetail;
 import com.hb.concert.domain.reservation.ReservationDetailRepository;
 import com.hb.concert.domain.reservation.ReservationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -17,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static com.hb.concert.support.CommonUtil.padLeftZeros;
-import static com.hb.concert.support.CommonUtil.padRightZeros;
 
 @Service
 public class ReservationService {
@@ -38,9 +36,8 @@ public class ReservationService {
      * @param command 예약 생성
      * @return ReservationResponse 예약 내역
      */
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Reservation createReservation(ReservationCommand.Create command) {
-        // 도메인 객체를 사용하여 예약 생성
         Reservation reservation = Reservation.create(generateReservationId(), command.userId(), command.concertId(), command.concertDetailId(), 5);
         saveReservation(reservation);
         return reservation;
@@ -55,11 +52,12 @@ public class ReservationService {
     private String generateReservationId() {
         String reservationIdStartStr = "reservation_";
         String newReservationId;
-
         Optional<Reservation> getLastReservation = reservationRepository.findTopByOrderByIdDesc();
+
         if (getLastReservation.isPresent()) {
             String lastReservationId = getLastReservation.map(Reservation::getReservationId).get();
-            newReservationId = reservationIdStartStr + padLeftZeros(lastReservationId.split("_")[1] + 1, 4);
+            int nextId = Integer.parseInt(lastReservationId.split("_")[1]) + 1;
+            newReservationId = reservationIdStartStr + String.format("%04d", nextId);
         } else {
             newReservationId = "reservation_0001";
         }
@@ -133,5 +131,26 @@ public class ReservationService {
 
     public Reservation getReservationInfo(String reservationId) {
         return reservationRepository.findByReservationId(reservationId);
+    }
+
+    /**
+     * 유저 예약정보 조회
+     * @param userId
+     * @return
+     */
+    public ReservationCommand.GetReservationInfo getReservationInfo(UUID userId) {
+        Reservation reservation = reservationRepository.getReservationInfo(userId);
+        List<ReservationDetail> reservationDetail = reservationDetailRepository.getReservationDetailInfo(reservation.getReservationId());
+
+        List<Integer> seatIdList = new ArrayList<>();
+        reservationDetail.forEach(detail -> seatIdList.add(detail.getConcertSeatId()));
+
+        return new ReservationCommand.GetReservationInfo(
+                reservation.getReservationId(),
+                reservation.getUserId(),
+                reservation.getReservationId(),
+                reservation.getConcertDetailId(),
+                seatIdList
+        );
     }
 }

@@ -51,6 +51,9 @@ public class Reservation {
     @Comment("예약 확정 여부") @Enumerated(EnumType.STRING)
     private ValidState validState;
 
+    @Version
+    private int version;
+
     public static Reservation create(String reservationId, UUID userId, String concertId, String concertDetailId, int durationMinutes) {
         return new Reservation().builder()
                 .reservationId(reservationId)

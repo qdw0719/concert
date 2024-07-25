@@ -27,4 +27,6 @@ public interface ReservationRepository {
     List<Reservation> findAllByIsPaid(UseYn useYn);
 
     List<UUID> findUserNotReservationToday(LocalDateTime startTime, LocalDateTime endTime);
+
+    Reservation getReservationInfo(UUID userId);
 }

@@ -33,6 +33,9 @@ public class ConcertSeat {
     @Comment("좌석 예약 가능 여부") @Enumerated(EnumType.STRING)
     private UseYn useYn;
 
+    @Version
+    private int version;
+
     public void reserved() {
         if (this.useYn == UseYn.N) {
             throw new CustomException.BadRequestException(CustomException.BadRequestException.ALREADY_RESERVED);

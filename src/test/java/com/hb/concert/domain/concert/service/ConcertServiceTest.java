@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class ConcertServiceTest {
@@ -52,7 +51,7 @@ class ConcertServiceTest {
 
         concertSeatList = new ArrayList();
         for (int i  = 0; i < 50; i++) {
-            concertSeatList.add(new ConcertSeat(1L, i+1, "concert1", "detail1", 17500, UseYn.Y));
+//            concertSeatList.add(new ConcertSeat(1L, i+1, "concert1", "detail1", 17500, UseYn.Y));
         }
     }
 

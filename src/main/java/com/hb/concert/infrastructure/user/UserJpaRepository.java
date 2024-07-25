@@ -10,5 +10,6 @@ import java.util.UUID;
 @Repository
 public interface UserJpaRepository extends JpaRepository<User, Long> {
     long count();
+
     Optional<User> findByUserId(UUID userId);
 }

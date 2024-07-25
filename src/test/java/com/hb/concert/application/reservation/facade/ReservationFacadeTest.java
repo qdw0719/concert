@@ -24,11 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReservationFacadeTest {
 
     @Autowired private ReservationFacade reservationFacade;
-
     @Autowired private ReservationRepository reservationRepository;
-
     @Autowired private ReservationDetailRepository reservationDetailRepository;
-
     @Autowired private HistoryRepository historyRepository;
 
     private ReservationCommand.Create reservationCreateCommand;

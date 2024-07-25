@@ -10,13 +10,14 @@ import com.hb.concert.domain.queue.service.QueueService;
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.history.History;
 import com.hb.concert.domain.reservation.Reservation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
+@Service @Slf4j
 public class ReservationFacade {
 
     private final ReservationService reservationService;
@@ -39,18 +40,26 @@ public class ReservationFacade {
      */
     @Transactional
     public ReservationCommand.ResponseReservationInfo createReservation(ReservationCommand.Create command) {
-        Reservation reservation = reservationService.createReservation(command);
+        long startTime = System.currentTimeMillis();
+
+        Reservation reservation;
+        List<Integer> concertSeatIdList;
+
+        reservation = reservationService.createReservation(command);
 
         HistoryCreateCommand.HistoryCreate historyCommand = new HistoryCreateCommand.HistoryCreate(
                 reservation.getUserId(), History.HistoryType.RESERVATION, reservation.getReservationTime(), History.HistoryStatus.SUCCESS, null
         );
         historyService.saveHistory(historyCommand);
 
-        List<Integer> concertSeatIdList = command.seatIdList();
+        concertSeatIdList = command.seatIdList();
         concertService.saveConcertSeat(command.concertId(), command.concertDetailId(), concertSeatIdList);
 
         ReservationDetailCommand.CreateReservationDetail detailCommand = new ReservationDetailCommand.CreateReservationDetail(reservation.getReservationId(), concertSeatIdList);
         reservationService.createReservationDetails(detailCommand, concertSeatIdList);
+
+        long endTime = System.currentTimeMillis();
+        log.info("총 걸린 시간 >>> {} ms", endTime - startTime);
 
         return new ReservationCommand.ResponseReservationInfo(
                 reservation.getReservationId(),

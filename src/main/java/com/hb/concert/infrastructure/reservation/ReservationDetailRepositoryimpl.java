@@ -34,4 +34,9 @@ public class ReservationDetailRepositoryimpl implements ReservationDetailReposit
     public List<ReservationDetail> findByReservationId(String reservationId) {
         return reservationDetailJpaRepository.findByReservationId(reservationId);
     }
+
+    @Override
+    public List<ReservationDetail> getReservationDetailInfo(String reservationId) {
+        return reservationDetailJpaRepository.findByReservationId(reservationId);
+    }
 }

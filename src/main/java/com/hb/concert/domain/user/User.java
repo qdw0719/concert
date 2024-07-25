@@ -22,4 +22,7 @@ public class User {
 
     @Comment("유저 잔액")
     private int balance;
+
+    @Version
+    private int version;
 }

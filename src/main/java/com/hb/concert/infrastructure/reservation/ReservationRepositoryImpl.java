@@ -68,4 +68,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public List<UUID> findUserNotReservationToday(LocalDateTime startTime, LocalDateTime endTime) {
         return reservationJpaRepository.findUserNotReservationToday(startTime, endTime);
     }
+
+    @Override
+    public Reservation getReservationInfo(UUID userId) {
+        return reservationJpaRepository.findTopByUserIdOrderByReservationTimeDesc(userId);
+    }
 }

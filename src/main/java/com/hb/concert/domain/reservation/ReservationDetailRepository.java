@@ -11,4 +11,6 @@ public interface ReservationDetailRepository {
     List<Integer> findConcertSeatIdByReservationId(String reservationId);
 
     List<ReservationDetail> findByReservationId(String reservationId);
+
+    List<ReservationDetail> getReservationDetailInfo(String reservationId);
 }

@@ -2,7 +2,9 @@ package com.hb.concert.infrastructure.reservation;
 
 import com.hb.concert.domain.common.enumerate.UseYn;
 import com.hb.concert.domain.reservation.Reservation;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,8 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, Lon
 
     int countByReservationId(String reservationId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT r FROM Reservation r ORDER BY r.id DESC")
     Optional<Reservation> findTopByOrderByIdDesc();
 
     List<Reservation> findByIsPaidAndReservationTimeBefore(UseYn useYn, LocalDateTime localDateTime);
@@ -30,4 +34,7 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, Lon
 
     @Query("SELECT r.userId FROM Reservation r WHERE r.reservationTime BETWEEN :startTime AND :endTime")
     List<UUID> findUserNotReservationToday(LocalDateTime startTime, LocalDateTime endTime);
+
+    @Query("SELECT r FROM Reservation r WHERE r.userId = :userId ORDER BY r.reservationTime DESC")
+    Reservation findTopByUserIdOrderByReservationTimeDesc(UUID userId);
 }

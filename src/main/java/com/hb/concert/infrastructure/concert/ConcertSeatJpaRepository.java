@@ -13,7 +13,7 @@ public interface ConcertSeatJpaRepository extends JpaRepository<ConcertSeat, Lon
 
     List<ConcertSeat> findByConcertIdAndUseYn(String concertId, UseYn useYn);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+//    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select cs from ConcertSeat cs where cs.concertId = :concertId and cs.concertDetailId = :concertDetailId")
     List<ConcertSeat> findByConcertIdAndConcertDetailId(String concertId, String concertDetailId);
 
