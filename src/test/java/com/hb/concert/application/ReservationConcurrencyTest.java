@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-public class ReservationcurrencyTest {
+public class ReservationConcurrencyTest {
 
     @Autowired private ReservationFacade reservationFacade;
     @Autowired private ReservationService reservationService;
