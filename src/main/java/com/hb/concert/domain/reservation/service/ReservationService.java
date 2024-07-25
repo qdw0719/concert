@@ -1,0 +1,156 @@
+package com.hb.concert.domain.reservation.service;
+
+import com.hb.concert.application.reservation.command.ReservationCommand;
+import com.hb.concert.application.reservation.command.ReservationDetailCommand;
+import com.hb.concert.domain.common.enumerate.UseYn;
+import com.hb.concert.domain.reservation.Reservation;
+import com.hb.concert.domain.reservation.ReservationDetail;
+import com.hb.concert.domain.reservation.ReservationDetailRepository;
+import com.hb.concert.domain.reservation.ReservationRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class ReservationService {
+
+    private final ReservationRepository reservationRepository;
+    private final ReservationDetailRepository reservationDetailRepository;
+
+    public ReservationService(ReservationRepository reservationRepository, ReservationDetailRepository reservationDetailRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationDetailRepository = reservationDetailRepository;
+    }
+
+    /**
+     * 예약 생성
+     *
+     * @param command 예약 생성
+     * @return ReservationResponse 예약 내역
+     */
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Reservation createReservation(ReservationCommand.Create command) {
+        Reservation reservation = Reservation.create(generateReservationId(), command.userId(), command.concertId(), command.concertDetailId(), 5);
+        saveReservation(reservation);
+        return reservation;
+    }
+
+    /**
+     * 예약번호 생성
+     *
+     * @param
+     * @return String token
+     * */
+    private String generateReservationId() {
+        String reservationIdStartStr = "reservation_";
+        String newReservationId;
+        Optional<Reservation> getLastReservation = reservationRepository.findTopByOrderByIdDesc();
+
+        if (getLastReservation.isPresent()) {
+            String lastReservationId = getLastReservation.map(Reservation::getReservationId).get();
+            int nextId = Integer.parseInt(lastReservationId.split("_")[1]) + 1;
+            newReservationId = reservationIdStartStr + String.format("%04d", nextId);
+        } else {
+            newReservationId = "reservation_0001";
+        }
+        return newReservationId;
+    }
+
+    public Reservation getReservationInfoByUser(UUID userId) {
+        return reservationRepository.findTopByUserIdOrderByUserIdDesc(userId);
+    }
+
+    public Reservation getReservationInfoByUserToday(UUID userId) {
+        return reservationRepository.findTopByUserIdAndReservationTimeBetweenOrderByUserIdDesc(userId, LocalDateTime.now().minusMinutes(5), LocalDateTime.now());
+    }
+
+    /**
+     * 예약 상세 생성
+     *
+     * @param command 예약 생성
+     */
+    @Transactional
+    public void createReservationDetails(ReservationDetailCommand.CreateReservationDetail command, List<Integer> concertSeatIdList) {
+        List<ReservationDetail> reservationDetailList = new ArrayList<>();
+        for (Integer seatNumber : concertSeatIdList) {
+            reservationDetailList.add(
+                    ReservationDetail.builder()
+                            .reservationId(command.reservationId())
+                            .concertSeatId(seatNumber)
+                            .build()
+            );
+        }
+        reservationDetailRepository.saveAll(reservationDetailList);
+    }
+
+    public List<Integer> getConcertSeatIdByReservationId(String reservationId) {
+        return reservationDetailRepository.findConcertSeatIdByReservationId(reservationId);
+    }
+
+
+    /**
+     * 결제하지 않고 임시예약(임시좌석)시간이 지난 reservation건들 조회
+     *
+     * @return List<Reservation>
+     */
+    public List<Reservation> getExpiredTargetList() {
+        return reservationRepository.findByIsPaidAndTemporaryGrantTimeBefore(UseYn.N, LocalDateTime.now());
+    }
+
+    /**
+     * 예약내역 저장
+     * @param reservation
+     */
+    @Transactional
+    public void saveReservation(Reservation reservation) {
+        reservationRepository.save(reservation);
+    }
+
+
+    /**
+     * 오늘 날짜에 예약한 유저 조회
+     * @return List<UUID>
+     */
+    public List<UUID> findUserReservationToday() {
+        LocalDateTime startTime = LocalDate.now().atStartOfDay();
+        LocalDateTime endTime = LocalDate.now().atTime(LocalTime.MAX);
+        return reservationRepository.findUserNotReservationToday(startTime, endTime);
+    }
+
+    public boolean hasReservation(String reservationId) {
+        return reservationRepository.countByReservationId(reservationId) > 0;
+    }
+
+    public Reservation getReservationInfo(String reservationId) {
+        return reservationRepository.findByReservationId(reservationId);
+    }
+
+    /**
+     * 유저 예약정보 조회
+     * @param userId
+     * @return
+     */
+    public ReservationCommand.GetReservationInfo getReservationInfo(UUID userId) {
+        Reservation reservation = reservationRepository.getReservationInfo(userId);
+        List<ReservationDetail> reservationDetail = reservationDetailRepository.getReservationDetailInfo(reservation.getReservationId());
+
+        List<Integer> seatIdList = new ArrayList<>();
+        reservationDetail.forEach(detail -> seatIdList.add(detail.getConcertSeatId()));
+
+        return new ReservationCommand.GetReservationInfo(
+                reservation.getReservationId(),
+                reservation.getUserId(),
+                reservation.getReservationId(),
+                reservation.getConcertDetailId(),
+                seatIdList
+        );
+    }
+}
