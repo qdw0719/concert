@@ -54,10 +54,48 @@ public class Reservation {
 
 ```
 
+### ReservationFacade.java
+```java
+// ..... 다른메소드 생략
+@Transactional
+public ReservationCommand.ResponseReservationInfo createReservation(ReservationCommand.Create command) {
+    long startTime = System.currentTimeMillis();
+
+    Reservation reservation;
+    List<Integer> concertSeatIdList;
+
+    reservation = reservationService.createReservation(command);
+
+    HistoryCreateCommand.HistoryCreate historyCommand = new HistoryCreateCommand.HistoryCreate(
+            reservation.getUserId(), History.HistoryType.RESERVATION, reservation.getReservationTime(), History.HistoryStatus.SUCCESS, null
+    );
+    historyService.saveHistory(historyCommand);
+
+    concertSeatIdList = command.seatIdList();
+    concertService.saveConcertSeat(command.concertId(), command.concertDetailId(), concertSeatIdList);
+
+    ReservationDetailCommand.CreateReservationDetail detailCommand = new ReservationDetailCommand.CreateReservationDetail(reservation.getReservationId(), concertSeatIdList);
+    reservationService.createReservationDetails(detailCommand, concertSeatIdList);
+
+    long endTime = System.currentTimeMillis();
+    log.info("총 걸린 시간 >>> {} ms", endTime - startTime);
+
+    return new ReservationCommand.ResponseReservationInfo(
+            reservation.getReservationId(),
+            reservation.getUserId(),
+            reservation.getConcertId(),
+            reservation.getConcertDetailId(),
+            concertSeatIdList.toString(),
+            UseYn.N
+    );
+}
+// ..... 다른메소드 생략
+```
+
  ### ReservationService.java
 ```java
 // ..... 다른메소드 생략
- @Transactional(isolation = Isolation.SERIALIZABLE)
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public Reservation createReservation(ReservationCommand.Create command) {
     Reservation reservation = Reservation.create(generateReservationId(), command.userId(), command.concertId(), command.concertDetailId(), 5);
     saveReservation(reservation);
