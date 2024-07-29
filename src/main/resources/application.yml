@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/concert_scenario
+    username: root
+    password: park0719!@#
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+    properties:
+      hibernate:
+        type: debug
+  data:
+    redis:
+      port: 6379
+      host: localhost
+    redisson:
+      config: |
+        singleServerConfig:
+          address: "redis://localhost:6379"
+
+jwt:
+  secretkey: 67CV7JiB7KSA7Iqk7ZSE66eB67aA7Yq47Iqk7YSw65SU
+
+#queue:
+#  max:
+#    size: 50
+
+server:
+  port: 9090
