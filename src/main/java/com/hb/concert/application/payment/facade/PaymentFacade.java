@@ -4,6 +4,7 @@ import com.hb.concert.application.payment.PaymentCommand;
 import com.hb.concert.domain.concert.service.ConcertService;
 import com.hb.concert.domain.payment.Payment;
 import com.hb.concert.domain.payment.service.PaymentService;
+import com.hb.concert.domain.queueToken.service.QueueTokenRedisService;
 import com.hb.concert.domain.queueToken.service.QueueTokenService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +16,10 @@ public class PaymentFacade {
 
     private final PaymentService paymentService;
     private final ConcertService concertService;
-    private final QueueTokenService queueTokenService;
+//    private final QueueTokenService queueTokenService;
+    private final QueueTokenRedisService queueTokenService;
 
-    public PaymentFacade(PaymentService paymentService, ConcertService concertService, QueueTokenService queueTokenService) {
+    public PaymentFacade(PaymentService paymentService, ConcertService concertService, QueueTokenRedisService queueTokenService) {
         this.paymentService = paymentService;
         this.concertService = concertService;
         this.queueTokenService = queueTokenService;

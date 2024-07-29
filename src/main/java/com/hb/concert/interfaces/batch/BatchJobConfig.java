@@ -1,6 +1,7 @@
 package com.hb.concert.interfaces.batch;
 
 import com.hb.concert.application.concert.facade.ConcertFacade;
+import com.hb.concert.domain.queueToken.service.QueueTokenRedisService;
 import com.hb.concert.domain.queueToken.service.QueueTokenService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -9,10 +10,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Configuration @EnableScheduling
 public class BatchJobConfig {
 
-    private final QueueTokenService queueTokenService;
+//    private final QueueTokenService queueTokenService;
+    private final QueueTokenRedisService queueTokenService;
     private final ConcertFacade concertFacade;
 
-    public BatchJobConfig(QueueTokenService queueTokenService, ConcertFacade concertFacade) {
+    public BatchJobConfig(QueueTokenRedisService queueTokenService, ConcertFacade concertFacade) {
         this.queueTokenService = queueTokenService;
         this.concertFacade = concertFacade;
     }

@@ -1,7 +1,9 @@
 package com.hb.concert.support.config.interceptor;
 
 import com.hb.concert.domain.exception.CustomException.QueueTokenException;
-import com.hb.concert.domain.queueToken.service.QueueTokenService;
+import com.hb.concert.domain.queueToken.QueueTokenRedis;
+import com.hb.concert.domain.queueToken.service.QueueTokenRedisService;
+//import com.hb.concert.domain.queueToken.service.QueueTokenService;
 import com.hb.concert.support.config.util.JwtUtil;
 import com.hb.concert.domain.queueToken.QueueToken;
 import com.hb.concert.domain.queueToken.QueueToken.TokenStatus;
@@ -21,7 +23,8 @@ import java.util.UUID;
 public class TokenValidationInterceptor implements HandlerInterceptor {
 
     @Autowired private JwtUtil jwtUtil;
-    @Autowired private QueueTokenService queueTokenService;
+//    @Autowired private QueueTokenService queueTokenService;
+    @Autowired private QueueTokenRedisService queueTokenService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -46,7 +49,7 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
                 return false;
             }
 
-            QueueToken queueToken = queueTokenService.getTokenInfo(tokenStr);
+            QueueTokenRedis queueToken = queueTokenService.getTokenInfo(tokenStr);
             if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, QueueTokenException.TOKEN_UNAUTHORIZED);
                 log.info("Token status check, status : {}", queueToken.getStatus());
