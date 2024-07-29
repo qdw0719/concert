@@ -79,7 +79,7 @@ public class ConcertService {
     public ConcertReservation createReservation(UUID userId, String concertDetailId, List<Integer> seatId) {
         RLock lock = redissonClient.getLock("concertReservationLock:" + concertDetailId);
         try {
-            if (lock.tryLock(10, 10, TimeUnit.SECONDS)) {
+            if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 try {
                     ConcertReservation reservation = new ConcertReservation();
                     reservation.createReservation(userId, concertDetailId, seatId);
@@ -106,7 +106,7 @@ public class ConcertService {
     public void reduceAvailableSeatCount(String concertDetailId, int selectedSeatCount) {
         RLock lock = redissonClient.getLock("seatLock:" + concertDetailId);
         try {
-            if (lock.tryLock(10, 10, TimeUnit.SECONDS)) {
+            if (lock.tryLock(10, TimeUnit.SECONDS)) {
                 try {
                     ConcertDetail concertDetail = concertRepository.getConcertDetailInfo(concertDetailId).orElseThrow(() -> new NotFoundException(NotFoundException.CONCERT_SCHEDULE_NOT_FOUND));
                     concertDetail.reduceAvailableSeat(selectedSeatCount);
