@@ -4,6 +4,7 @@ import com.hb.concert.domain.exception.CustomException.QueueTokenException;
 import com.hb.concert.domain.queueToken.QueueToken;
 import com.hb.concert.domain.queueToken.QueueTokenConfig;
 import com.hb.concert.domain.queueToken.QueueTokenRedis;
+import com.hb.concert.domain.queueToken.TokenStatus;
 import com.hb.concert.domain.queueToken.ViewData.TokenInfo;
 import com.hb.concert.support.config.util.JwtUtil;
 import org.redisson.api.RMap;
@@ -43,17 +44,17 @@ public class QueueTokenRedisService {
 
         String token;
         int position;
-        QueueToken.TokenStatus status;
+        TokenStatus status;
 
         if (processQueue.size() < QueueTokenConfig.MAX_ACTIVE_USER && waitQueue.isEmpty()) {
             position = 0;
             token = jwtUtil.generateToken(userId, position, concertDetailId);
-            status = QueueToken.TokenStatus.PROCESS;
+            status = TokenStatus.PROCESS;
             processQueue.add(position, token);
         } else {
             position = waitQueue.size() + 1;
             token = jwtUtil.generateToken(userId, position, concertDetailId);
-            status = QueueToken.TokenStatus.WAIT;
+            status = TokenStatus.WAIT;
             waitQueue.add(position, token);
         }
 

@@ -32,4 +32,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override public long count() {
         return userJpaRepository.count();
     }
+
+    @Override public Optional<User> getUserInfoById(long id) {
+        return userJpaRepository.findById(id);
+    }
 }

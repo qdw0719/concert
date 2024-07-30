@@ -5,8 +5,7 @@ import com.hb.concert.domain.queueToken.QueueTokenRedis;
 import com.hb.concert.domain.queueToken.service.QueueTokenRedisService;
 //import com.hb.concert.domain.queueToken.service.QueueTokenService;
 import com.hb.concert.support.config.util.JwtUtil;
-import com.hb.concert.domain.queueToken.QueueToken;
-import com.hb.concert.domain.queueToken.QueueToken.TokenStatus;
+import com.hb.concert.domain.queueToken.TokenStatus;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,7 +49,7 @@ public class TokenValidationInterceptor implements HandlerInterceptor {
             }
 
             QueueTokenRedis queueToken = queueTokenService.getTokenInfo(tokenStr);
-            if (queueToken.getStatus().equals(QueueToken.TokenStatus.EXPIRED)) {
+            if (queueToken.getStatus().equals(TokenStatus.EXPIRED)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, QueueTokenException.TOKEN_UNAUTHORIZED);
                 log.info("Token status check, status : {}", queueToken.getStatus());
                 return false;

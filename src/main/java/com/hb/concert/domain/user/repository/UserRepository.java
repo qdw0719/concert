@@ -14,4 +14,6 @@ public interface UserRepository {
     void saveAll(List<User> userList);
 
     long count();
+
+    Optional<User> getUserInfoById(long id);
 }

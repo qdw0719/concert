@@ -10,10 +10,10 @@ public class QueueTokenRedis implements Serializable {
     private String token;
     private String concertDetailId;
     private int position;
-    private QueueToken.TokenStatus status;
+    private TokenStatus status;
     private LocalDateTime expiredAt;
 
-    public QueueTokenRedis(String token, String concertDetailId, int position, QueueToken.TokenStatus status) {
+    public QueueTokenRedis(String token, String concertDetailId, int position, TokenStatus status) {
         this.token = token;
         this.concertDetailId = concertDetailId;
         this.position = position;
@@ -26,11 +26,11 @@ public class QueueTokenRedis implements Serializable {
     }
 
     public void setTokenStatusExpired() {
-        this.status = QueueToken.TokenStatus.EXPIRED;
+        this.status = TokenStatus.EXPIRED;
     }
 
     public void setTokenStatusProcess() {
-        this.status = QueueToken.TokenStatus.PROCESS;
+        this.status = TokenStatus.PROCESS;
     }
 
     public void reducePosition() {

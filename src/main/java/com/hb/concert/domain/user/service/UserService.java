@@ -3,11 +3,14 @@ package com.hb.concert.domain.user.service;
 import com.hb.concert.domain.exception.CustomException.NotFoundException;
 import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Service
+@Service @Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -23,6 +26,7 @@ public class UserService {
      * @param amount
      * @return
      */
+    @Transactional
     public User charge(UUID userId, int amount) {
         User user = userRepository.getUserInfo(userId).orElseThrow(() -> new NotFoundException(NotFoundException.USER_NOT_FOUND));
         user.charge(amount);
@@ -37,6 +41,7 @@ public class UserService {
      * @param amount
      * @return
      */
+    @Transactional
     public User consume(UUID userId, int amount) {
         User user = userRepository.getUserInfo(userId).orElseThrow(() -> new NotFoundException(NotFoundException.USER_NOT_FOUND));
         user.consume(amount);

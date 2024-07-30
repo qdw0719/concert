@@ -2,7 +2,7 @@ package com.hb.concert.domain.queueToken.service;
 
 import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.domain.queueToken.QueueToken;
-import com.hb.concert.domain.queueToken.QueueToken.TokenStatus;
+import com.hb.concert.domain.queueToken.TokenStatus;
 import com.hb.concert.domain.queueToken.QueueTokenConfig;
 import com.hb.concert.domain.queueToken.ViewData.TokenInfo;
 import com.hb.concert.domain.queueToken.repository.QueueTokenRepository;

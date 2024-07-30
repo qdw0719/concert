@@ -23,10 +23,6 @@ public class QueueToken {
     private TokenStatus status;
     private LocalDateTime expiredAt;
 
-    public enum TokenStatus {
-        WAIT, PROCESS, EXPIRED
-    }
-
     @PrePersist protected void onCreate() {
         updateExpiredAt();
     }

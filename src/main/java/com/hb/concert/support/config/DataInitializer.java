@@ -74,7 +74,7 @@ public class DataInitializer {
                 log.info("ConcertDetail count : {}", concertRepository.detailCount());
             } else {
                 List<ConcertDetail> concertDetailList = new ArrayList<>();
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 10000; i++) {
                     int idIndex = i + 1;
                     int index = (i % 3) + 1;
                     concertDetailList.add(
@@ -95,7 +95,7 @@ public class DataInitializer {
                 log.info("Concert seat count : {}", concertRepository.seatCount());
             } else {
                 List<ConcertSeatConfig> concertSeatConfigList = new ArrayList<>();
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 10000; i++) {
                     int seatId = i + 1;
                     concertSeatConfigList.add(
                             ConcertSeatConfig.builder()
@@ -113,7 +113,7 @@ public class DataInitializer {
 
     public static LocalDate getRandomDate() {
         LocalDate startDate = LocalDate.of(2024, 7, 1);
-        LocalDate endDate = LocalDate.of(2024, 10, 31);
+        LocalDate endDate = LocalDate.of(2099, 12, 31);
 
         long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
 
