@@ -4,7 +4,6 @@ import com.hb.concert.domain.exception.CustomException.NotFoundException;
 import com.hb.concert.domain.user.User;
 import com.hb.concert.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

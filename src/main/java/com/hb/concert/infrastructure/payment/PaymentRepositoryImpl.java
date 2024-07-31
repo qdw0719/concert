@@ -1,4 +1,4 @@
-package com.hb.concert.infrastructure.Payment;
+package com.hb.concert.infrastructure.payment;
 
 import com.hb.concert.domain.payment.Payment;
 import com.hb.concert.domain.payment.repository.PaymentRepository;

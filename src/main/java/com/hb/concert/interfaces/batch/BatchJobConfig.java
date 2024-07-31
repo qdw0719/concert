@@ -28,19 +28,20 @@ public class BatchJobConfig {
     }
 
     /**
-     * 대기열 입장 후 아무런 api호출이 없는 사용자 만료처리
+     * expiredtime 체크해서 만료처리
      * */
     @Scheduled(fixedRate = 60000)
     public void checkExpiredTokens() {
         queueTokenService.expiredToken();
-        queueTokenService.waitTokenPositionReduce();
     }
 
     /**
-     * 대기순번 0인 토큰들은 활성화
+     * 50명씩 활성화
+     * 00분에 시작해서 5분주기로 활성화
      * */
-    @Scheduled(fixedRate = 60000)
-    public void checkProcessedTokens() {
-        queueTokenService.processedToken();
+    @Scheduled(cron = "0 */5 * * * *")
+    public void checkProcessedTokens() throws InterruptedException {
+        Thread.sleep(30000);
+        queueTokenService.activateTokens();
     }
 }

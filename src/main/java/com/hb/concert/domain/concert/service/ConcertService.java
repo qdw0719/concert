@@ -8,26 +8,21 @@ import com.hb.concert.domain.concert.ViewData.SeatInfo;
 import com.hb.concert.domain.concert.repository.ConcertRepository;
 import com.hb.concert.domain.concert.repository.ConcertReservationRepository;
 import com.hb.concert.domain.exception.CustomException.NotFoundException;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class ConcertService {
 
     private final ConcertRepository concertRepository;
     private final ConcertReservationRepository concertReservationRepository;
-    private final RedissonClient redissonClient;
 
-    public ConcertService(ConcertRepository concertRepository, ConcertReservationRepository concertReservationRepository, RedissonClient redissonClient) {
+    public ConcertService(ConcertRepository concertRepository, ConcertReservationRepository concertReservationRepository) {
         this.concertRepository = concertRepository;
         this.concertReservationRepository = concertReservationRepository;
-        this.redissonClient = redissonClient;
     }
 
     /**
@@ -77,24 +72,11 @@ public class ConcertService {
      */
     @Transactional
     public ConcertReservation createReservation(UUID userId, String concertDetailId, List<Integer> seatId) {
-        RLock lock = redissonClient.getLock("concertReservationLock:" + concertDetailId);
-        try {
-            if (lock.tryLock(10, TimeUnit.SECONDS)) {
-                try {
-                    ConcertReservation reservation = new ConcertReservation();
-                    reservation.createReservation(userId, concertDetailId, seatId);
-                    concertReservationRepository.save(reservation);
-                    reduceAvailableSeatCount(concertDetailId, seatId.size());
-                    return reservation;
-                }  finally {
-                    lock.unlock();
-                }
-            } else {
-                throw new RuntimeException("Could not acquire lock for creating reservation");
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to acquire lock for creating reservation", e);
-        }
+        ConcertReservation reservation = new ConcertReservation();
+        reservation.createReservation(userId, concertDetailId, seatId);
+        concertReservationRepository.save(reservation);
+        reduceAvailableSeatCount(concertDetailId, seatId.size());
+        return reservation;
     }
 
     /**
@@ -104,22 +86,9 @@ public class ConcertService {
      */
     @Transactional
     public void reduceAvailableSeatCount(String concertDetailId, int selectedSeatCount) {
-        RLock lock = redissonClient.getLock("seatLock:" + concertDetailId);
-        try {
-            if (lock.tryLock(10, TimeUnit.SECONDS)) {
-                try {
-                    ConcertDetail concertDetail = concertRepository.getConcertDetailInfo(concertDetailId).orElseThrow(() -> new NotFoundException(NotFoundException.CONCERT_SCHEDULE_NOT_FOUND));
-                    concertDetail.reduceAvailableSeat(selectedSeatCount);
-                    concertRepository.concertDetailSave(concertDetail);
-                } finally {
-                    lock.unlock();
-                }
-            } else {
-                throw new RuntimeException("Could not acquire lock for reducing available seat count");
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to acquire lock for reducing available seat count", e);
-        }
+        ConcertDetail concertDetail = concertRepository.getConcertDetailInfo(concertDetailId).orElseThrow(() -> new NotFoundException(NotFoundException.CONCERT_SCHEDULE_NOT_FOUND));
+        concertDetail.reduceAvailableSeat(selectedSeatCount);
+        concertRepository.concertDetailSave(concertDetail);
     }
 
     /**

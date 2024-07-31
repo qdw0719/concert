@@ -4,24 +4,19 @@ import com.hb.concert.domain.exception.CustomException.NotFoundException;
 import com.hb.concert.domain.payment.Payment;
 import com.hb.concert.domain.payment.repository.PaymentRepository;
 import com.hb.concert.support.CommonUtil;
-import org.redisson.api.RLock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.redisson.api.RedissonClient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final RedissonClient redissonClient;
 
-    public PaymentService(PaymentRepository paymentRepository, RedissonClient redissonClient) {
+    public PaymentService(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
-        this.redissonClient = redissonClient;
     }
 
     public Payment getPaymentInfoByReservation(String reservationId) {
@@ -36,23 +31,10 @@ public class PaymentService {
      */
     @Transactional
     public Payment createPayment(String reservationId) {
-        RLock lock = redissonClient.getLock("paymentLock:" + reservationId);
-        try {
-            if (lock.tryLock(10, 10, TimeUnit.SECONDS)) {
-                try {
-                    Payment payment = new Payment();
-                    payment.createPayment(reservationId);
-                    paymentRepository.save(payment);
-                    return payment;
-                } finally {
-                    lock.unlock();
-                }
-            } else {
-                throw new RuntimeException("Could not acquire lock for creating payment");
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to acquire lock for creating payment", e);
-        }
+        Payment payment = new Payment();
+        payment.createPayment(reservationId);
+        paymentRepository.save(payment);
+        return payment;
     }
 
     /**
@@ -62,27 +44,14 @@ public class PaymentService {
      */
     @Transactional
     public Payment processedPayment(String reservationId) {
-        RLock lock = redissonClient.getLock("paymentLock:" + reservationId);
-        try {
-            if (lock.tryLock(10, 10, TimeUnit.SECONDS)) {
-                try {
-                    Payment payment = getPaymentInfoByReservation(reservationId);
-                    if (CommonUtil.isNonNull(payment)) {
-                        payment.successPayment();
-                        payment = paymentRepository.save(payment);
-                    } else {
-                        throw new NotFoundException(NotFoundException.PAYMENT_INFO_NOT_FOUND);
-                    }
-                    return payment;
-                } finally {
-                    lock.unlock();
-                }
-            } else {
-                throw new RuntimeException("Could not acquire lock for processing payment");
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to acquire lock for processing payment", e);
+        Payment payment = getPaymentInfoByReservation(reservationId);
+        if (CommonUtil.isNonNull(payment)) {
+            payment.successPayment();
+            payment = paymentRepository.save(payment);
+        } else {
+            throw new NotFoundException(NotFoundException.PAYMENT_INFO_NOT_FOUND);
         }
+        return payment;
     }
 
     public List<String> getEffectiveTimeAfterNow(String reservationId, LocalDateTime reservationTime) {

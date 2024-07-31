@@ -4,7 +4,7 @@ import com.hb.concert.domain.exception.CustomException;
 import com.hb.concert.domain.exception.CustomException.QueueTokenException;
 import com.hb.concert.support.config.util.JwtUtil;
 import com.hb.concert.domain.queueToken.QueueToken;
-import com.hb.concert.domain.queueToken.QueueToken.TokenStatus;
+import com.hb.concert.domain.queueToken.TokenStatus;
 import com.hb.concert.domain.queueToken.repository.QueueTokenRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;

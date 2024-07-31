@@ -30,9 +30,22 @@ public class ConcertFacade {
 
     @Transactional
     public ConcertReservation createReservation(ConcertCommand.CreateReservation createReservationCommand) {
-        ConcertReservation reservation = concertService.createReservation(createReservationCommand.userId(), createReservationCommand.concertDetailId(), createReservationCommand.seatId());
-        paymentService.createPayment(reservation.getReservationId());
-        return reservation;
+        RLock lock = redissonClient.getLock("concertReservationLock:" + createReservationCommand.concertDetailId());
+        try {
+            if (lock.tryLock(10, TimeUnit.SECONDS)) {
+                try {
+                    ConcertReservation reservation = concertService.createReservation(createReservationCommand.userId(), createReservationCommand.concertDetailId(), createReservationCommand.seatId());
+                    paymentService.createPayment(reservation.getReservationId());
+                    return reservation;
+                }  finally {
+                    lock.unlock();
+                }
+            } else {
+                throw new RuntimeException("Could not acquire lock for creating reservation");
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted while trying to acquire lock for creating reservation", e);
+        }
     }
 
     @Transactional

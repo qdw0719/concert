@@ -21,7 +21,7 @@ public class QueueTokenController {
     @GetMapping("/token")
     public ResponseEntity<QueueTokenResponse> getToken(@RequestBody QueueTokenRequest request) {
         return ResponseEntity.ok(
-                QueueTokenResponse.tokenInfoOf(queueTokenFacade.generateToken(request.toCreateCommand()))
+                QueueTokenResponse.tokenInfoOf(queueTokenFacade.issueToken(request.toCreateCommand()))
         );
     }
 

@@ -44,7 +44,7 @@ public class QueueTokenService {
         // 대기 중인 토큰 목록 조회
         List<QueueToken> waitTokenList = queueTokenRepository.getWaitTokenList(concertDetailId);
 
-        if (processedTokenList.size() < QueueTokenConfig.MAX_ACTIVE_USER && waitTokenList.size() == 0) {
+        if (processedTokenList.size() < QueueTokenConfig.ACTIVE_USER_INTERVAL && waitTokenList.size() == 0) {
             // 서비스 이용중인 인원이 최대 인원보다 적으면 즉시 서비스 이용가능한 토큰 생성
             position = 0;
             token = jwtUtil.generateToken(userId, position, concertDetailId);

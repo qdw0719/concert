@@ -19,9 +19,6 @@ public class User {
     private UUID userId;
     private Integer balance;
 
-    @Version
-    private int version;
-
     @PrePersist protected void onCreate() {
         if (CommonUtil.isNull(this.balance)) {
             this.balance = 0;

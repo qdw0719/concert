@@ -16,8 +16,8 @@ public class QueueTokenFacade {
         this.queueTokenService = queueTokenService;
     }
 
-    public TokenInfo generateToken(QueueTokenCommand.Create command) {
-        return queueTokenService.generateToken(command.userId(), command.concertDetailId());
+    public TokenInfo issueToken(QueueTokenCommand.Create command) {
+        return queueTokenService.issueToken(command.userId(), command.concertDetailId());
     }
 
     public TokenInfo getWaitingInfo(QueueTokenCommand.Search command) {

@@ -21,9 +21,9 @@ public class QueueTokenRedis implements Serializable {
         this.expiredAt = LocalDateTime.now().plusMinutes(5);
     }
 
-    public void updateExpiredAt() {
-        this.expiredAt = LocalDateTime.now().plusMinutes(5);
-    }
+//    public void updateExpiredAt() {
+//        this.expiredAt = LocalDateTime.now().plusMinutes(5);
+//    }
 
     public void setTokenStatusExpired() {
         this.status = TokenStatus.EXPIRED;
@@ -33,15 +33,11 @@ public class QueueTokenRedis implements Serializable {
         this.status = TokenStatus.PROCESS;
     }
 
-    public void reducePosition() {
-        this.position--;
-    }
-
     public boolean isTokenExpiredTarget() {
         return LocalDateTime.now().isAfter(expiredAt);
     }
 
-    public void setPosition(int position) {
-        this.position = position;
-    }
+//    public void setPosition(int position) {
+//        this.position = position;
+//    }
 }
