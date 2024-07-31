@@ -2,7 +2,9 @@ package com.hb.concert.application.concert.facade;
 
 import com.hb.concert.application.concert.ConcertCommand;
 import com.hb.concert.domain.concert.ConcertReservation;
-import com.hb.concert.domain.concert.ViewData;
+import com.hb.concert.domain.concert.ViewData.ConcertInfo;
+import com.hb.concert.domain.concert.ViewData.ScheduleInfo;
+import com.hb.concert.domain.concert.ViewData.SeatInfo;
 import com.hb.concert.domain.concert.service.ConcertService;
 import com.hb.concert.domain.payment.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +43,10 @@ public class ConcertFacade {
                     lock.unlock();
                 }
             } else {
-                throw new RuntimeException("Could not acquire lock for creating reservation");
+                throw new RuntimeException("예약정보에 대한 락을 획득하지 못했습니다.");
             }
         } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to acquire lock for creating reservation", e);
+            throw new RuntimeException("예약정보에 대한 락을 획득하던 도중 서비스가 중단되었습니다.", e);
         }
     }
 
@@ -71,22 +73,22 @@ public class ConcertFacade {
                     lock.unlock();
                 }
             } else {
-                throw new RuntimeException("Could not acquire lock for expiring reservations");
+                throw new RuntimeException("예약만료에 대한 락을 획득하지 못했습니다.");
             }
         } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to acquire lock for expiring reservations", e);
+            throw new RuntimeException("예약만료에 대한 락을 획득하던 도중 서비스가 중단되었습니다.", e);
         }
     }
 
-    public List<ViewData.ConcertInfo> getConcertInfo() {
+    public List<ConcertInfo> getConcertInfo() {
         return concertService.getConcertInfo();
     }
 
-    public ViewData.ScheduleInfo getScheduleInfo(ConcertCommand.Search searchInfoCommand) {
+    public ScheduleInfo getScheduleInfo(ConcertCommand.Search searchInfoCommand) {
         return concertService.getScheduleInfo(searchInfoCommand.concertId());
     }
 
-    public ViewData.SeatInfo getSeatInfo(ConcertCommand.Search command) {
+    public SeatInfo getSeatInfo(ConcertCommand.Search command) {
         return concertService.getSeatInfo(command.concertId(), command.concertDetailId());
     }
 }

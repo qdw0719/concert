@@ -28,23 +28,6 @@ public class PaymentFacade {
         this.redissonClient = redissonClient;
     }
 
-    public Payment createPayment(PaymentCommand.Process command) {
-        RLock lock = redissonClient.getLock("paymentLock:" + command.reservationId());
-        try {
-            if (lock.tryLock(10, 10, TimeUnit.SECONDS)) {
-                try {
-                    return paymentService.createPayment(command.reservationId());
-                } finally {
-                    lock.unlock();
-                }
-            } else {
-                throw new RuntimeException("Could not acquire lock for creating payment");
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to acquire lock for creating payment", e);
-        }
-    }
-
     @Transactional
     public Payment processedPayment(PaymentCommand.Process command, String token) {
         UUID userId = command.userId();
