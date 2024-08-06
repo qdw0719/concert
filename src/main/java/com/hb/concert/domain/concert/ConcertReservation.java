@@ -16,7 +16,9 @@ import java.util.UUID;
 
 @NoArgsConstructor @AllArgsConstructor
 @Builder @Data
-@Entity @Table(name = "HB_CONCERT_RESERVATION")
+@Entity @Table(name = "HB_CONCERT_RESERVATION",indexes = {
+        @Index(name = "idx_concert_reservation", columnList = "concertDetailId, reservationTime")
+})
 public class ConcertReservation {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

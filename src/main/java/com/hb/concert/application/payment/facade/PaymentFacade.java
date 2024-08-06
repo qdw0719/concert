@@ -43,10 +43,10 @@ public class PaymentFacade {
                     lock.unlock();
                 }
             } else {
-                throw new RuntimeException("Could not acquire lock for processing payment");
+                throw new RuntimeException("결제에 대한 락을 획득하지 못했습니다.");
             }
         } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to acquire lock for processing payment", e);
+            throw new RuntimeException("결제에 대한 락을 획득하던 도중 서비스가 중단되었습니다.", e);
         }
 
         concertService.completeReserved(userId, reservationId);

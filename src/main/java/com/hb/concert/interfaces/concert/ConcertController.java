@@ -30,14 +30,14 @@ public class ConcertController {
         );
     }
 
-    @GetMapping("/schedule")
+    @PostMapping("/schedule")
     public ResponseEntity<ScheduleInfoResponse> getConcertSchedule(@RequestBody ConcertRequest request) {
         return ResponseEntity.ok(
                 ScheduleInfoResponse.of(concertFacade.getScheduleInfo(request.toSearchInfoCommand()))
         );
     }
 
-    @GetMapping("/seatInfo")
+    @PostMapping("/seatInfo")
     public ResponseEntity<SeatInfoResponse> getConcert(@RequestBody ConcertRequest request) {
         return ResponseEntity.ok(
                 SeatInfoResponse.of(concertFacade.getSeatInfo(request.toSearchInfoCommand()))

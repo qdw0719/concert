@@ -1,6 +1,7 @@
 package com.hb.concert.domain.user.repository;
 
 import com.hb.concert.domain.user.User;
+import com.hb.concert.domain.user.UserHistory;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +17,6 @@ public interface UserRepository {
     long count();
 
     Optional<User> getUserInfoById(long id);
+
+    void historySave(UserHistory userHistory);
 }

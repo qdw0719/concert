@@ -9,9 +9,12 @@ import com.hb.concert.support.config.util.JwtUtil;
 import org.redisson.api.RMap;
 import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 @Service
@@ -42,11 +45,10 @@ public class QueueTokenRedisService {
 
         int position = waitQueue.size() + 1;
         String token = jwtUtil.generateToken(userId, position, concertDetailId);
-        TokenStatus status = TokenStatus.WAIT;
 
         waitQueue.add(position, token);
 
-        QueueTokenRedis queueToken = new QueueTokenRedis(token, concertDetailId, position, status);
+        QueueTokenRedis queueToken = new QueueTokenRedis(token, concertDetailId, position, TokenStatus.WAIT);
         tokenMap.put(token, queueToken);
 
         return new TokenInfo(token, position);
@@ -83,6 +85,7 @@ public class QueueTokenRedisService {
      * @param tokenStr 토큰 문자열
      * @return 조회된 토큰 정보
      */
+    @Cacheable(value = "queueTokenInfo", key = "#tokenStr")
     public QueueTokenRedis getTokenInfo(String tokenStr) {
         RMap<String, QueueTokenRedis> tokenMap = redissonClient.getMap(TOKEN_MAP);
         QueueTokenRedis queueToken = tokenMap.get(tokenStr);
@@ -98,7 +101,7 @@ public class QueueTokenRedisService {
      * @param token 토큰 문자열
      * @return 대기열 정보
      */
-    @Transactional
+    @Transactional @Cacheable(value = "waitingInfo", key = "#token")
     public TokenInfo getWaitingInfo(String token) {
         RMap<String, QueueTokenRedis> tokenMap = redissonClient.getMap(TOKEN_MAP);
         QueueTokenRedis queueToken = getTokenInfo(token);
@@ -110,7 +113,7 @@ public class QueueTokenRedisService {
      * 결제가 완료되었을 때 토큰을 만료시킨다.
      * @param token 토큰 문자열
      */
-    @Transactional
+    @Transactional @CacheEvict(value = "queueTokenInfo", key = "#token")
     public void expiredTokenAfterPayment(String token) {
         RMap<String, QueueTokenRedis> tokenMap = redissonClient.getMap(TOKEN_MAP);
         QueueTokenRedis queueToken = getTokenInfo(token);
@@ -122,7 +125,7 @@ public class QueueTokenRedisService {
      * 대기상태의 토큰 상태를 활성상태로 업데이트한다.
      * @param token 토큰 문자열
      */
-    @Transactional
+    @Transactional @CacheEvict(value = "queueTokenInfo", key = "#token")
     public void updateWaitToProcessStatus(String token) {
         RMap<String, QueueTokenRedis> tokenMap = redissonClient.getMap(TOKEN_MAP);
         QueueTokenRedis queueToken = getTokenInfo(token);
@@ -146,14 +149,14 @@ public class QueueTokenRedisService {
         RMap<String, QueueTokenRedis> tokenMap = redissonClient.getMap(TOKEN_MAP);
         RScoredSortedSet<String> waitQueue = redissonClient.getScoredSortedSet(WAIT_QUEUE);
 
-        for (String token : waitQueue) {
+        waitQueue.forEach(token -> {
             QueueTokenRedis queueToken = tokenMap.get(token);
             if (queueToken.isTokenExpiredTarget()) {
                 queueToken.setTokenStatusExpired();
                 tokenMap.put(token, queueToken);
                 waitQueue.remove(token);
             }
-        }
+        });
     }
 
     /***
@@ -163,26 +166,26 @@ public class QueueTokenRedisService {
     public void activateTokens() {
         RMap<String, QueueTokenRedis> tokenMap = redissonClient.getMap(TOKEN_MAP);
         RScoredSortedSet<String> waitQueue = redissonClient.getScoredSortedSet(WAIT_QUEUE);
+        
+        Iterator<String> iterator = waitQueue.iterator();
 
         int activatedCount = 0;
-        for (String token : waitQueue) {
-            if (activatedCount >= QueueTokenConfig.ACTIVE_USER_INTERVAL) {
-                break;
-            }
+        while (iterator.hasNext() && activatedCount < QueueTokenConfig.ACTIVE_USER_INTERVAL) {
+            String token = iterator.next();
 
             QueueTokenRedis queueToken = tokenMap.get(token);
             queueToken.setTokenStatusProcess();
             tokenMap.put(token, queueToken);
 
-            String concertDetailId = queueToken.getConcertDetailId();
-            RScoredSortedSet<String> processQueue = redissonClient.getScoredSortedSet(PROCESS_QUEUE + ":" + concertDetailId);
+            RScoredSortedSet<String> processQueue = redissonClient.getScoredSortedSet(PROCESS_QUEUE + ":" + queueToken.getConcertDetailId());
 
             processQueue.add(queueToken.getPosition(), token);
-            waitQueue.remove(token);
+            iterator.remove();
 
             activatedCount++;
         }
     }
+
 //    public void processedToken() {
 //        RMap<String, QueueTokenRedis> tokenMap = redissonClient.getMap(TOKEN_MAP);
 //        RScoredSortedSet<String> processQueue = redissonClient.getScoredSortedSet(PROCESS_QUEUE);

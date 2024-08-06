@@ -1,6 +1,7 @@
 package com.hb.concert.infrastructure.user;
 
 import com.hb.concert.domain.user.User;
+import com.hb.concert.domain.user.UserHistory;
 import com.hb.concert.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,9 +13,11 @@ import java.util.UUID;
 public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
+    private final UserHistoryJpaRepository userHistoryJpaRepository;
 
-    public UserRepositoryImpl(UserJpaRepository userJpaRepository) {
+    public UserRepositoryImpl(UserJpaRepository userJpaRepository, UserHistoryJpaRepository userHistoryJpaRepository) {
         this.userJpaRepository = userJpaRepository;
+        this.userHistoryJpaRepository = userHistoryJpaRepository;
     }
 
     @Override public Optional<User> getUserInfo(UUID userId) {
@@ -35,5 +38,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override public Optional<User> getUserInfoById(long id) {
         return userJpaRepository.findById(id);
+    }
+
+    @Override
+    public void historySave(UserHistory userHistory) {
+        userHistoryJpaRepository.save(userHistory);
     }
 }

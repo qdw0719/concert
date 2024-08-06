@@ -1,6 +1,7 @@
 package com.hb.concert.domain.user;
 
 import com.hb.concert.domain.exception.CustomException.BadRequestException;
+import com.hb.concert.domain.user.listener.UserEntityListener;
 import com.hb.concert.support.CommonUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor @AllArgsConstructor
 @Builder @Data
 @Entity @Table(name = "HB_USER")
+@EntityListeners(value = UserEntityListener.class)
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

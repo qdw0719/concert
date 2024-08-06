@@ -8,9 +8,9 @@ import com.hb.concert.domain.concert.ViewData.SeatInfo;
 import java.time.LocalDate;
 
 public class ConcertResponse {
-    public record ConcertInfoResponse(String concertName, String artist, LocalDate concertDate, Integer availableSeatCount) {
+    public record ConcertInfoResponse(String concertId, String concertDetailId, String concertName, String artist, LocalDate concertDate, Integer availableSeatCount) {
         public static ConcertInfoResponse of(ConcertInfo concertInfo) {
-            return new ConcertInfoResponse(concertInfo.concertName(), concertInfo.artist(), concertInfo.concertDate(), concertInfo.availableSeatCount());
+            return new ConcertInfoResponse(concertInfo.concertId(), concertInfo.concertDetailId(), concertInfo.concertName(), concertInfo.artist(), concertInfo.concertDate(), concertInfo.availableSeatCount());
         }
     }
     public record ScheduleInfoResponse(ScheduleInfo scheduleInfo) {

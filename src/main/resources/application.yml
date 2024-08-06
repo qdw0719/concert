@@ -16,10 +16,8 @@ spring:
     redis:
       port: 6379
       host: localhost
-    redisson:
-      config: |
-        singleServerConfig:
-          address: "redis://localhost:6379"
+    cache:
+      type: redis
 
 jwt:
   secretkey: 67CV7JiB7KSA7Iqk7ZSE66eB67aA7Yq47Iqk7YSw65SU

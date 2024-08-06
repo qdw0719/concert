@@ -32,6 +32,8 @@ public class ConcertRepositoryImpl implements ConcertRepository {
                 .map(concertDetail -> {
                     Concert concert = concertJpaRepository.findByConcertId(concertDetail.getConcertId()).orElseThrow(() -> new NotFoundException(NotFoundException.CONCERT_NOT_FOUND));
                     return new ConcertInfo(
+                            concert.getConcertId(),
+                            concertDetail.getConcertDetailId(),
                             concert.getConcertName(),
                             concert.getArtist(),
                             concertDetail.getConcertDate(),
