@@ -1,6 +1,7 @@
 package com.hb.concert.infrastructure.concert;
 
 import com.hb.concert.domain.concert.ConcertDetail;
+import com.hb.concert.domain.concert.ConcertReservation;
 import com.hb.concert.domain.concert.ConcertSeatConfig;
 import com.hb.concert.domain.concert.ViewData.ScheduleInfo;
 import com.hb.concert.domain.concert.ViewData.ConcertInfo;
@@ -20,11 +21,13 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     private final ConcertJpaRepository concertJpaRepository;
     private final ConcertDetailJpaRepository concertDetailJpaRepository;
     private final ConcertSeatConfigJpaRepository concertSeatConfigJpaRepository;
+    private final ConcertReservationJpaRepository concertReservationJpaRepository;
 
-    public ConcertRepositoryImpl(ConcertJpaRepository concertJpaRepository, ConcertDetailJpaRepository concertDetailJpaRepository, ConcertSeatConfigJpaRepository concertSeatConfigJpaRepository) {
+    public ConcertRepositoryImpl(ConcertJpaRepository concertJpaRepository, ConcertDetailJpaRepository concertDetailJpaRepository, ConcertSeatConfigJpaRepository concertSeatConfigJpaRepository, ConcertReservationJpaRepository concertReservationJpaRepository) {
         this.concertJpaRepository = concertJpaRepository;
         this.concertDetailJpaRepository = concertDetailJpaRepository;
         this.concertSeatConfigJpaRepository = concertSeatConfigJpaRepository;
+        this.concertReservationJpaRepository = concertReservationJpaRepository;
     }
 
     @Override public List<ConcertInfo> getConcertInfo() {
@@ -85,5 +88,10 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override public long seatCount() {
         return concertSeatConfigJpaRepository.count();
+    }
+
+    @Override
+    public void reservationSaveAll(List<ConcertReservation> concertReservations) {
+        concertReservationJpaRepository.saveAll(concertReservations);
     }
 }

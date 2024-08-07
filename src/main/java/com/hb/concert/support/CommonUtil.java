@@ -3,6 +3,7 @@ package com.hb.concert.support;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -62,10 +63,11 @@ public class CommonUtil {
     }
 
     public static String dateToString(LocalDateTime date, DateFormatType type) {
+        Date dateObj = Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
         return switch (type) {
-            case DATE_TO_STRING_YYMMDD -> yyMMdd.format(date);
-            case DATE_TO_STRING_YYYYMMDD -> yyyyMMdd.format(date);
-            case DATE_TO_STRING_YYYYMMDDHHMMSS -> yyyyMMddHHmmss.format(date);
+            case DATE_TO_STRING_YYMMDD -> yyMMdd.format(dateObj);
+            case DATE_TO_STRING_YYYYMMDD -> yyyyMMdd.format(dateObj);
+            case DATE_TO_STRING_YYYYMMDDHHMMSS -> yyyyMMddHHmmss.format(dateObj);
             default -> date.toString();
         };
     }

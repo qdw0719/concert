@@ -2,6 +2,7 @@ package com.hb.concert.domain.concert.repository;
 
 import com.hb.concert.domain.concert.Concert;
 import com.hb.concert.domain.concert.ConcertDetail;
+import com.hb.concert.domain.concert.ConcertReservation;
 import com.hb.concert.domain.concert.ConcertSeatConfig;
 import com.hb.concert.domain.concert.ViewData.ScheduleInfo;
 import com.hb.concert.domain.concert.ViewData.ConcertInfo;
@@ -31,4 +32,6 @@ public interface ConcertRepository {
     long concertCount();
     long detailCount();
     long seatCount();
+
+    void reservationSaveAll(List<ConcertReservation> concertReservations);
 }

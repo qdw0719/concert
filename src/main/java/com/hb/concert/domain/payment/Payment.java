@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor @AllArgsConstructor
 @Builder @Data
-@Entity @Table(name = "HB_PAYMENT",indexes = {
-        @Index(name = "idx_payment", columnList = "reservationId")
-})
+@Entity @Table(name = "HB_PAYMENT"
+        , indexes = { @Index(name = "idx_payment", columnList = "reservationId") }
+)
 public class Payment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

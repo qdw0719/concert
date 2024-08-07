@@ -44,4 +44,9 @@ public class UserRepositoryImpl implements UserRepository {
     public void historySave(UserHistory userHistory) {
         userHistoryJpaRepository.save(userHistory);
     }
+
+    @Override
+    public void historySaveAll(List<UserHistory> userHistoryList) {
+        userHistoryJpaRepository.saveAll(userHistoryList);
+    }
 }

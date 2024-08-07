@@ -19,4 +19,6 @@ public interface UserRepository {
     Optional<User> getUserInfoById(long id);
 
     void historySave(UserHistory userHistory);
+
+    void historySaveAll(List<UserHistory> userHistoryList);
 }

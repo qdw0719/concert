@@ -2,7 +2,10 @@ package com.hb.concert.support.config;
 
 import com.hb.concert.domain.concert.*;
 import com.hb.concert.domain.concert.repository.ConcertRepository;
+import com.hb.concert.domain.payment.Payment;
+import com.hb.concert.domain.payment.repository.PaymentRepository;
 import com.hb.concert.domain.user.User;
+import com.hb.concert.domain.user.UserHistory;
 import com.hb.concert.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
@@ -11,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,10 +26,12 @@ public class DataInitializer {
 
     private final UserRepository userRepository;
     private final ConcertRepository concertRepository;
+    private final PaymentRepository paymentRepository;
 
-    public DataInitializer(UserRepository userRepository, ConcertRepository concertRepository) {
+    public DataInitializer(UserRepository userRepository, ConcertRepository concertRepository, PaymentRepository paymentRepository) {
         this.userRepository = userRepository;
         this.concertRepository = concertRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Bean @Transactional
@@ -42,6 +48,28 @@ public class DataInitializer {
                 userRepository.saveAll(userList);
                 log.info("Successfully saved all users");
             }
+
+            List<UserHistory> userHistoryList = new ArrayList<>();
+            for (int i = 0; i < 10000; i++) {
+                userHistoryList.add(
+                        UserHistory.builder()
+                                .userId(UUID.randomUUID())
+                                .amount(i % 100)
+                                .balance((i % 100) * 10)
+                                .createAt(LocalDateTime.now())
+                                .build()
+                );
+
+                if ((i + 1) % 1000 == 0) {
+                    userRepository.historySaveAll(userHistoryList);
+                    userHistoryList.clear();
+                    Thread.sleep(50);
+                }
+            }
+            if (!userHistoryList.isEmpty()) {
+                userRepository.historySaveAll(userHistoryList);
+            }
+            log.info("Successfully saved all user histories");
 
             long concertCount = concertRepository.concertCount();
             if (concertCount > 0) {
@@ -108,6 +136,49 @@ public class DataInitializer {
                 concertRepository.seatSaveAll(concertSeatConfigList);
                 log.info("Successfully saved all concert seat config");
             }
+
+            List<ConcertReservation> concertReservationList = new ArrayList<>();
+            for (int i = 0; i < 10000; i++) {
+                concertReservationList.add(
+                        ConcertReservation.builder()
+                                .userId(UUID.randomUUID())
+                                .concertDetailId("concertDetail" + (i % 1000 + 1))
+                                .reservationTime(LocalDateTime.now())
+                                .reservedSeatId(List.of(i % 100))
+                                .build()
+                );
+
+                if ((i + 1) % 1000 == 0) {
+                    concertRepository.reservationSaveAll(concertReservationList);
+                    concertReservationList.clear();
+                    Thread.sleep(50);
+                }
+            }
+            if (!concertReservationList.isEmpty()) {
+                concertRepository.reservationSaveAll(concertReservationList);
+            }
+            log.info("Successfully saved all concert reservations");
+
+
+            List<Payment> paymentList = new ArrayList<>();
+            for (int i = 0; i < 10000; i++) {
+                paymentList.add(
+                        Payment.builder()
+                                .reservationId("reservation" + (i + 1))
+                                .effectiveTime(LocalDateTime.now().plusMinutes(5))
+                                .build()
+                );
+
+                if ((i + 1) % 1000 == 0) {
+                    paymentRepository.saveAll(paymentList);
+                    paymentList.clear();
+                    Thread.sleep(50);
+                }
+            }
+            if (!paymentList.isEmpty()) {
+                paymentRepository.saveAll(paymentList);
+            }
+            log.info("Successfully saved all payments");
         };
     }
 
