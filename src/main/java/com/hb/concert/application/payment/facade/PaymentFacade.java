@@ -3,6 +3,8 @@ package com.hb.concert.application.payment.facade;
 import com.hb.concert.application.payment.PaymentCommand;
 import com.hb.concert.domain.concert.service.ConcertService;
 import com.hb.concert.domain.payment.Payment;
+import com.hb.concert.domain.payment.dataplatform.PaymentCompleteEvent;
+import com.hb.concert.domain.payment.pulisher.PaymentEventPublisher;
 import com.hb.concert.domain.payment.service.PaymentService;
 import com.hb.concert.domain.queueToken.service.QueueTokenRedisService;
 import org.redisson.api.RLock;
@@ -20,12 +22,14 @@ public class PaymentFacade {
     private final ConcertService concertService;
     private final QueueTokenRedisService queueTokenService;
     private final RedissonClient redissonClient;
+    private final PaymentEventPublisher paymentEventPublisher;
 
-    public PaymentFacade(PaymentService paymentService, ConcertService concertService, QueueTokenRedisService queueTokenService, RedissonClient redissonClient) {
+    public PaymentFacade(PaymentService paymentService, ConcertService concertService, QueueTokenRedisService queueTokenService, RedissonClient redissonClient, PaymentEventPublisher paymentEventPublisher) {
         this.paymentService = paymentService;
         this.concertService = concertService;
         this.queueTokenService = queueTokenService;
         this.redissonClient = redissonClient;
+        this.paymentEventPublisher = paymentEventPublisher;
     }
 
     @Transactional
@@ -38,7 +42,7 @@ public class PaymentFacade {
         try {
             if (lock.tryLock(10, 10, TimeUnit.SECONDS)) {
                 try {
-                    payment = paymentService.processedPayment(reservationId);
+                    payment = paymentService.pay(reservationId);
                 } finally {
                     lock.unlock();
                 }
@@ -51,6 +55,9 @@ public class PaymentFacade {
 
         concertService.completeReserved(userId, reservationId);
         queueTokenService.expiredTokenAfterPayment(token);
+
+        PaymentCompleteEvent event = new PaymentCompleteEvent(reservationId);
+        paymentEventPublisher.complete(event);
 
         return payment;
     }

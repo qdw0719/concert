@@ -43,7 +43,7 @@ public class PaymentService {
      * @return
      */
     @Transactional
-    public Payment processedPayment(String reservationId) {
+    public Payment pay(String reservationId) {
         Payment payment = getPaymentInfoByReservation(reservationId);
         if (CommonUtil.isNonNull(payment)) {
             payment.successPayment();
