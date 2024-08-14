@@ -3,7 +3,7 @@ package com.hb.concert.application.payment.facade;
 import com.hb.concert.application.payment.PaymentCommand;
 import com.hb.concert.domain.concert.service.ConcertService;
 import com.hb.concert.domain.payment.Payment;
-import com.hb.concert.domain.payment.dataplatform.PaymentCompleteEvent;
+import com.hb.concert.domain.dataplatform.PaymentCompleteEvent;
 import com.hb.concert.domain.payment.pulisher.PaymentEventPublisher;
 import com.hb.concert.domain.payment.service.PaymentService;
 import com.hb.concert.domain.queueToken.service.QueueTokenRedisService;

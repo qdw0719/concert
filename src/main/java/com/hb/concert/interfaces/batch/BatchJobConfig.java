@@ -1,8 +1,8 @@
 package com.hb.concert.interfaces.batch;
 
 import com.hb.concert.application.concert.facade.ConcertFacade;
+import com.hb.concert.domain.dataplatform.service.DataPlatformService;
 import com.hb.concert.domain.queueToken.service.QueueTokenRedisService;
-import com.hb.concert.domain.queueToken.service.QueueTokenService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,10 +13,12 @@ public class BatchJobConfig {
 //    private final QueueTokenService queueTokenService;
     private final QueueTokenRedisService queueTokenService;
     private final ConcertFacade concertFacade;
+    private final DataPlatformService dataPlatformService;
 
-    public BatchJobConfig(QueueTokenRedisService queueTokenService, ConcertFacade concertFacade) {
+    public BatchJobConfig(QueueTokenRedisService queueTokenService, ConcertFacade concertFacade, DataPlatformService dataPlatformService) {
         this.queueTokenService = queueTokenService;
         this.concertFacade = concertFacade;
+        this.dataPlatformService = dataPlatformService;
     }
 
     /**
@@ -28,14 +30,6 @@ public class BatchJobConfig {
     }
 
     /**
-     * expiredtime 체크해서 만료처리
-     * */
-    @Scheduled(fixedRate = 60000)
-    public void checkExpiredTokens() {
-        queueTokenService.expiredToken();
-    }
-
-    /**
      * 50명씩 활성화
      * 00분에 시작해서 5분주기로 활성화
      * */
@@ -43,5 +37,10 @@ public class BatchJobConfig {
     public void checkProcessedTokens() throws InterruptedException {
         Thread.sleep(30000);
         queueTokenService.activateTokens();
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void dataplatformResend() {
+        dataPlatformService.resend();
     }
 }

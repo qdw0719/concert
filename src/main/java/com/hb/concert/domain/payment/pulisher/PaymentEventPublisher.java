@@ -1,6 +1,6 @@
 package com.hb.concert.domain.payment.pulisher;
 
-import com.hb.concert.domain.payment.dataplatform.PaymentCompleteEvent;
+import com.hb.concert.domain.dataplatform.PaymentCompleteEvent;
 //import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
